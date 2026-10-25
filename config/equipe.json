@@ -1,0 +1,76 @@
+{
+  "reference": "SPY",
+  "capital_par_agent": 10000,
+  "univers": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "EFA",
+    "EEM",
+    "TLT",
+    "IEF",
+    "GLD",
+    "VNQ",
+    "XLK",
+    "XLF",
+    "XLE",
+    "XLV",
+    "XLP",
+    "XLU"
+  ],
+  "evolution_tous_les_jours": 5,
+  "plis": 6,
+  "longueur_pli": 126,
+  "agents": {
+    "chasseur": {
+      "strategie": "momentum",
+      "role": "Achète ce qui monte le plus fort sur une période donnée.",
+      "parametres": {
+        "lookback": 126,
+        "skip": 5,
+        "top_n": 3,
+        "rebalance_days": 21,
+        "filtre_absolu": 1
+      }
+    },
+    "contrarien": {
+      "strategie": "reversion",
+      "role": "Achète les replis excessifs à l'intérieur d'une tendance haussière.",
+      "parametres": {
+        "lookback": 20,
+        "trend_sma": 200,
+        "top_n": 3,
+        "z_entree": 1.5,
+        "rebalance_days": 5
+      }
+    },
+    "gardien": {
+      "strategie": "defensif",
+      "role": "Répartit le risque à parts égales et vise une volatilité basse.",
+      "parametres": {
+        "vol_lookback": 60,
+        "vol_cible": 0.08,
+        "rebalance_days": 21
+      },
+      "univers": [
+        "SPY",
+        "EFA",
+        "TLT",
+        "IEF",
+        "GLD",
+        "VNQ",
+        "XLP",
+        "XLU"
+      ]
+    },
+    "navigateur": {
+      "strategie": "tendance",
+      "role": "Reste investi dans ce qui est au-dessus de sa moyenne mobile, sinon cash.",
+      "parametres": {
+        "sma": 200,
+        "max_actifs": 6,
+        "rebalance_days": 10
+      }
+    }
+  }
+}

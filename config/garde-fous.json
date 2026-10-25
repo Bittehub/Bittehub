@@ -1,0 +1,19 @@
+{
+  "_lisez_moi": "Limites dures. Aucun agent ne peut les modifier : le système enregistre leur empreinte et refuse de tourner si ce fichier change sans une nouvelle signature humaine (python3 -m equipe garde-fous --approuver).",
+  "mode": "papier",
+  "poids_max_par_titre": 0.35,
+  "cash_min": 0.02,
+  "rotation_max_par_jour": 0.6,
+  "drawdown_max_agent": 0.2,
+  "pause_min_jours": 10,
+  "poids_max_equipe_par_titre": 0.3,
+  "jours_min_entre_changements": 21,
+  "candidats_max_par_evaluation": 8,
+  "marge_adoption": 0.25,
+  "plis_gagnes_min": 6,
+  "t_stat_min": 3.0,
+  "correlation_max_entre_agents": 0.9,
+  "glissement_bps": 5,
+  "commission_par_ordre": 0.0,
+  "ordre_min": 10.0
+}
