@@ -1,0 +1,170 @@
+{
+ "version": 1,
+ "source_donnees": "yahoo",
+ "debut": null,
+ "au": "2026-10-23",
+ "garde_fous_sha": "8789754330fcc00f534f7f31624039dace61acd5b9035928c0b7a6218c650b90",
+ "agents": {
+  "chasseur": {
+   "strategie": "momentum",
+   "role": "Achète ce qui monte le plus fort sur une période donnée.",
+   "univers": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "EFA",
+    "EEM",
+    "TLT",
+    "IEF",
+    "GLD",
+    "VNQ",
+    "XLK",
+    "XLF",
+    "XLE",
+    "XLV",
+    "XLP",
+    "XLU"
+   ],
+   "options": {},
+   "parametres": {
+    "lookback": 126,
+    "skip": 5,
+    "top_n": 3,
+    "rebalance_days": 21,
+    "filtre_absolu": 1
+   },
+   "portefeuille": {
+    "cash": 10000.0,
+    "positions": {}
+   },
+   "capital_initial": 10000.0,
+   "historique": [],
+   "pic": 10000.0,
+   "en_pause": false,
+   "pause_depuis": null,
+   "dernier_reequilibrage": null,
+   "dernier_changement": null,
+   "generation": 1
+  },
+  "contrarien": {
+   "strategie": "reversion",
+   "role": "Achète les replis excessifs dans une tendance haussière ; le reste du temps, son argent est placé dans le S&P 500.",
+   "univers": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "EFA",
+    "EEM",
+    "TLT",
+    "IEF",
+    "GLD",
+    "VNQ",
+    "XLK",
+    "XLF",
+    "XLE",
+    "XLV",
+    "XLP",
+    "XLU"
+   ],
+   "options": {
+    "parking": "SPY"
+   },
+   "parametres": {
+    "lookback": 20,
+    "trend_sma": 200,
+    "top_n": 3,
+    "z_entree": 1.5,
+    "rebalance_days": 5
+   },
+   "portefeuille": {
+    "cash": 10000.0,
+    "positions": {}
+   },
+   "capital_initial": 10000.0,
+   "historique": [],
+   "pic": 10000.0,
+   "en_pause": false,
+   "pause_depuis": null,
+   "dernier_reequilibrage": null,
+   "dernier_changement": null,
+   "generation": 1
+  },
+  "pilier": {
+   "strategie": "double_momentum",
+   "role": "Tout sur l'indice large (États-Unis ou monde hors États-Unis) qui a le plus monté sur un an ; en obligations si aucun ne monte.",
+   "univers": [
+    "SPY",
+    "EFA",
+    "IEF"
+   ],
+   "options": {
+    "refuge": "IEF"
+   },
+   "parametres": {
+    "lookback": 252,
+    "rebalance_days": 21
+   },
+   "portefeuille": {
+    "cash": 10000.0,
+    "positions": {}
+   },
+   "capital_initial": 10000.0,
+   "historique": [],
+   "pic": 10000.0,
+   "en_pause": false,
+   "pause_depuis": null,
+   "dernier_reequilibrage": null,
+   "dernier_changement": null,
+   "generation": 1
+  },
+  "navigateur": {
+   "strategie": "tendance",
+   "role": "Reste investi dans ce qui est au-dessus de sa moyenne mobile, sinon cash.",
+   "univers": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "EFA",
+    "EEM",
+    "TLT",
+    "IEF",
+    "GLD",
+    "VNQ",
+    "XLK",
+    "XLF",
+    "XLE",
+    "XLV",
+    "XLP",
+    "XLU"
+   ],
+   "options": {},
+   "parametres": {
+    "sma": 200,
+    "max_actifs": 6,
+    "rebalance_days": 10
+   },
+   "portefeuille": {
+    "cash": 10000.0,
+    "positions": {}
+   },
+   "capital_initial": 10000.0,
+   "historique": [],
+   "pic": 10000.0,
+   "en_pause": false,
+   "pause_depuis": null,
+   "dernier_reequilibrage": null,
+   "dernier_changement": null,
+   "generation": 1
+  }
+ },
+ "reference": {
+  "ticker": "SPY",
+  "capital": 40000.0,
+  "parts": null,
+  "historique": []
+ },
+ "equipe": {
+  "capital": 40000.0,
+  "historique": []
+ }
+}
