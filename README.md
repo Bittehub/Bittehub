@@ -13,8 +13,8 @@ toucher.
 | Agent | Métier | Ce qu'il fait |
 |---|---|---|
 | **chasseur** | momentum | Achète les titres qui ont le plus monté sur une période donnée. |
-| **contrarien** | retour à la moyenne | Achète les replis excessifs à l'intérieur d'une tendance haussière. |
-| **gardien** | défensif | Répartit le risque à parts égales (parité de risque) et vise une volatilité basse. |
+| **contrarien** | retour à la moyenne | Achète les replis excessifs à l'intérieur d'une tendance haussière ; le reste du temps, son argent est placé dans le S&P 500 au lieu de dormir. |
+| **pilier** | double momentum | Tout sur l'indice large (S&P 500 ou monde hors États-Unis) qui a le plus monté sur un an ; en obligations (IEF) si aucun ne monte. |
 | **navigateur** | suivi de tendance | Reste investi dans ce qui est au-dessus de sa moyenne mobile, sinon en cash. |
 | *risk manager* | code, pas agent | Garde-fous durs : plafonds, pas de levier, coupe-circuit, plafond de rotation. |
 | *entraîneur* | code, pas agent | Fait évoluer les réglages, uniquement sur preuve. |
@@ -27,7 +27,8 @@ SPY (S&P 500) le premier jour et conservé.
 
 - **Plafond commun.** Aucun titre ne dépasse 30 % du capital de toute l'équipe, même si chaque
   agent reste dans ses propres limites. Si plusieurs agents veulent le même titre, leurs cibles
-  sont réduites au prorata.
+  sont réduites au prorata. Les indices larges (SPY, EFA, IEF) en sont exemptés : ce sont déjà
+  des paniers de centaines de titres.
 - **Mentorat.** À chaque évaluation, un agent teste aussi un réglage rapproché de celui du
   coéquipier le plus performant du moment.
 - **Diversité protégée.** Un nouveau réglage est refusé s'il rend l'agent trop semblable à un
@@ -90,7 +91,7 @@ ni passer d'ordre réel. Une tâche planifiée peut la lancer chaque soir après
 
 | Règle | Valeur |
 |---|---|
-| Poids max par titre (par agent) | 35 % |
+| Poids max par titre (par agent) | 35 %, sauf indices larges (SPY, EFA, IEF) : 98 % |
 | Cash minimum | 2 % |
 | Poids max par titre (équipe entière) | 30 % |
 | Rotation max par jour | 60 % du portefeuille |

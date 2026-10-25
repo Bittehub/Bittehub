@@ -35,33 +35,33 @@
     },
     "contrarien": {
       "strategie": "reversion",
-      "role": "Achète les replis excessifs à l'intérieur d'une tendance haussière.",
+      "role": "Achète les replis excessifs dans une tendance haussière ; le reste du temps, son argent est placé dans le S&P 500.",
       "parametres": {
         "lookback": 20,
         "trend_sma": 200,
         "top_n": 3,
         "z_entree": 1.5,
         "rebalance_days": 5
+      },
+      "options": {
+        "parking": "SPY"
       }
     },
-    "gardien": {
-      "strategie": "defensif",
-      "role": "Répartit le risque à parts égales et vise une volatilité basse.",
+    "pilier": {
+      "strategie": "double_momentum",
+      "role": "Tout sur l'indice large (États-Unis ou monde hors États-Unis) qui a le plus monté sur un an ; en obligations si aucun ne monte.",
       "parametres": {
-        "vol_lookback": 60,
-        "vol_cible": 0.08,
+        "lookback": 252,
         "rebalance_days": 21
       },
       "univers": [
         "SPY",
         "EFA",
-        "TLT",
-        "IEF",
-        "GLD",
-        "VNQ",
-        "XLP",
-        "XLU"
-      ]
+        "IEF"
+      ],
+      "options": {
+        "refuge": "IEF"
+      }
     },
     "navigateur": {
       "strategie": "tendance",

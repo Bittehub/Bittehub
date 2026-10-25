@@ -31,10 +31,11 @@ def _t_stat(ecarts):
     return m / math.sqrt(var / n)
 
 
-def _eval(strategie, params, univers, prices, plis, g):
+def _eval(agent, params, prices, plis, g):
     scores, rets = [], []
     for s, e in plis:
-        vals = moteur.simuler(strategie, params, univers, prices, s, e, g)
+        vals = moteur.simuler(agent["strategie"], params, agent["univers"], prices, s, e, g,
+                              options=agent.get("options"))
         scores.append(mesures.score(vals))
         rets.extend(mesures.rendements(vals))
     return scores, rets
@@ -114,7 +115,7 @@ def evoluer(etat, prices, i, g, cfg, propositions):
         return []
     equipiers = {}
     for n, a in etat["agents"].items():
-        equipiers[n] = _eval(a["strategie"], a["parametres"], a["univers"], prices, plis, g)
+        equipiers[n] = _eval(a, a["parametres"], prices, plis, g)
 
     for nom in candidats_agents:
         a = etat["agents"][nom]
@@ -126,7 +127,7 @@ def evoluer(etat, prices, i, g, cfg, propositions):
         best = None
         resultats = {}
         for p, src, hyp in cands:
-            sc, rets = _eval(a["strategie"], p, a["univers"], prices, plis, g)
+            sc, rets = _eval(a, p, prices, plis, g)
             ecarts = [x - y for x, y in zip(sc, base_scores)]
             gain = sum(ecarts) / len(ecarts)
             t = _t_stat(ecarts)

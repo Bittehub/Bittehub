@@ -8,6 +8,7 @@ def nouvel_agent(nom, spec, capital, univers_equipe):
         "strategie": spec["strategie"],
         "role": spec["role"],
         "univers": spec.get("univers", univers_equipe),
+        "options": spec.get("options", {}),
         "parametres": strategies.clamp(spec["strategie"], spec["parametres"]),
         "portefeuille": Portefeuille(capital).to_dict(),
         "capital_initial": capital,
@@ -30,14 +31,27 @@ def _trades(cible, actuel):
     return {t: cible.get(t, 0.0) - actuel.get(t, 0.0) for t in set(cible) | set(actuel)}
 
 
-def simuler(strategie, params, univers, prices, start, end, g, capital=10000.0):
+def cibles(strategie, params, univers, options, prices, i, g):
+    """Poids cibles bornés par les garde-fous. Avec un "parking", la part que la stratégie laisse
+    en cash est placée sur cet indice au lieu de dormir."""
+    w = gardefous.clip_targets(strategies.targets(strategie, prices, i, univers, params, options), g, univers)
+    parking = (options or {}).get("parking")
+    if parking and prices.hist(parking, i, 1) is not None:
+        reste = 1.0 - g["cash_min"] - sum(w.values())
+        if reste > 0:
+            w[parking] = w.get(parking, 0.0) + reste
+            w = gardefous.clip_targets(w, g, univers)
+    return w
+
+
+def simuler(strategie, params, univers, prices, start, end, g, capital=10000.0, options=None):
     """Un agent seul, sur les jours [start, end) : sert à l'entraîneur pour comparer des réglages."""
     pf = Portefeuille(capital)
     vals, last = [], None
     for i in range(start, end):
         if last is None or i - last >= params["rebalance_days"]:
             v = pf.valeur(prices, i)
-            w = gardefous.clip_targets(strategies.targets(strategie, prices, i, univers, params), g, univers)
+            w = cibles(strategie, params, univers, options, prices, i, g)
             trades, f = gardefous.limit_turnover(
                 _trades({t: x * v for t, x in w.items()}, pf.notionnels(prices, i)), v, g)
             pf.executer(trades, prices, i, g)
@@ -62,7 +76,7 @@ def jour(etat, prices, i, g):
         a["pic"] = max(a["pic"], vals[n])
         dd = 1 - vals[n] / a["pic"]
         if not a["en_pause"] and dd >= g["drawdown_max_agent"]:
-            fills = pfs[n].executer({t: -v for t, v in pfs[n].notionnels(prices, i).items()}, prices, i, g)
+            fills = pfs[n].liquider(prices, i, g)
             a["en_pause"], a["pause_depuis"] = True, date
             ev.append({"date": date, "type": "coupe_circuit", "agent": n, "drawdown": round(dd, 4),
                        "ordres": fills,
@@ -70,25 +84,24 @@ def jour(etat, prices, i, g):
                                 % (n, dd * 100)})
 
     # 2. Chaque agent actif et dû propose ses cibles, bornées par les garde-fous.
-    cibles, fixes = {}, {}
+    voulues, fixes = {}, {}
     for n, a in agents.items():
         if not a["en_pause"] and _due(a, prices, i):
-            w = strategies.targets(a["strategie"], prices, i, a["univers"], a["parametres"])
-            w = gardefous.clip_targets(w, g, a["univers"])
-            cibles[n] = {t: x * vals[n] for t, x in w.items()}
+            w = cibles(a["strategie"], a["parametres"], a["univers"], a.get("options"), prices, i, g)
+            voulues[n] = {t: x * vals[n] for t, x in w.items()}
         else:
             for t, v in pfs[n].notionnels(prices, i).items():
                 fixes[t] = fixes.get(t, 0.0) + v
 
     # 3. Coordination d'équipe : plafond de concentration commun.
-    cibles, coupes = gardefous.team_overlay(cibles, fixes, team_eq, g)
+    voulues, coupes = gardefous.team_overlay(voulues, fixes, team_eq, g)
     if coupes:
         ev.append({"date": date, "type": "concentration", "reductions": coupes,
                    "texte": "L'équipe était trop concentrée ; cibles réduites sur %s."
                             % ", ".join(sorted(coupes))})
 
     # 4. Exécution, sous plafond de rotation.
-    for n, cible in cibles.items():
+    for n, cible in voulues.items():
         a = agents[n]
         trades, f = gardefous.limit_turnover(_trades(cible, pfs[n].notionnels(prices, i)), vals[n], g)
         fills = pfs[n].executer(trades, prices, i, g)

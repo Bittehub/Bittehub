@@ -26,9 +26,14 @@ def verify(path, signed_hash):
 
 
 def clip_targets(w, g, univers):
-    """Hors univers retiré, plafond par titre, pas de levier, cash minimum gardé."""
-    out = {t: min(max(x, 0.0), g["poids_max_par_titre"]) for t, x in w.items() if t in univers and x > 0}
+    """Hors univers retiré, plafond par titre, pas de levier, cash minimum gardé.
+
+    Les indices larges (un ETF qui contient déjà des centaines de sociétés) échappent au plafond
+    par titre : les plafonner reviendrait à forcer du cash, pas à diversifier."""
     cap = 1.0 - g["cash_min"]
+    larges = set(g.get("indices_larges", []))
+    out = {t: min(max(x, 0.0), cap if t in larges else g["poids_max_par_titre"])
+           for t, x in w.items() if t in univers and x > 0}
     tot = sum(out.values())
     if tot > cap:
         out = {t: x * cap / tot for t, x in out.items()}
@@ -36,17 +41,20 @@ def clip_targets(w, g, univers):
 
 
 def team_overlay(cibles, fixes, team_equity, g):
-    """Solidarité : aucun titre ne dépasse poids_max_equipe_par_titre de l'équipe entière.
+    """Solidarité : aucun titre ne dépasse poids_max_equipe_par_titre de l'équipe entière
+    (sauf les indices larges, qui sont déjà des paniers diversifiés).
 
     cibles = {agent: {ticker: montant cible}} pour les agents qui rééquilibrent aujourd'hui ;
     fixes = {ticker: montant} déjà détenu par ceux qui ne bougent pas. Les cibles qui font dépasser
     le plafond sont réduites au prorata, pour que l'équipe ne mise pas tout sur le même cheval.
     """
     cap = g["poids_max_equipe_par_titre"] * team_equity
+    larges = set(g.get("indices_larges", []))
     totals = {}
     for tg in cibles.values():
         for t, v in tg.items():
-            totals[t] = totals.get(t, 0.0) + v
+            if t not in larges:
+                totals[t] = totals.get(t, 0.0) + v
     cut = {}
     for t, v in totals.items():
         room = max(0.0, cap - fixes.get(t, 0.0))

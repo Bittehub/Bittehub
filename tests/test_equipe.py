@@ -71,10 +71,16 @@ def creer_etat(prices, debut_i):
 
 class GardeFous(unittest.TestCase):
     def test_plafond_par_titre_cash_min_et_univers(self):
-        w = gardefous.clip_targets({"SPY": 0.9, "QQQ": 0.5, "BTC": 0.3, "TLT": -0.2}, G, CFG["univers"])
+        w = gardefous.clip_targets({"XLK": 0.9, "QQQ": 0.5, "BTC": 0.3, "TLT": -0.2}, G, CFG["univers"])
         self.assertNotIn("BTC", w)
         self.assertNotIn("TLT", w)
         self.assertTrue(all(x <= G["poids_max_par_titre"] + 1e-12 for x in w.values()))
+        self.assertLessEqual(sum(w.values()), 1 - G["cash_min"] + 1e-12)
+
+    def test_indice_large_sans_plafond_par_titre_mais_sans_levier(self):
+        w = gardefous.clip_targets({"SPY": 1.0}, G, CFG["univers"])
+        self.assertAlmostEqual(w["SPY"], 1 - G["cash_min"])
+        w = gardefous.clip_targets({"SPY": 1.0, "QQQ": 0.3}, G, CFG["univers"])
         self.assertLessEqual(sum(w.values()), 1 - G["cash_min"] + 1e-12)
 
     def test_pas_de_levier(self):
@@ -82,12 +88,15 @@ class GardeFous(unittest.TestCase):
         self.assertAlmostEqual(sum(w.values()), 1 - G["cash_min"])
 
     def test_concentration_equipe(self):
-        cibles = {"a": {"SPY": 9000}, "b": {"SPY": 9000, "TLT": 1000}}
-        out, coupes = gardefous.team_overlay(cibles, {"SPY": 3000}, 40000, G)
-        total_spy = out["a"]["SPY"] + out["b"]["SPY"] + 3000
-        self.assertAlmostEqual(total_spy, G["poids_max_equipe_par_titre"] * 40000)
+        cibles = {"a": {"QQQ": 9000, "SPY": 9000}, "b": {"QQQ": 9000, "TLT": 1000, "SPY": 9000}}
+        out, coupes = gardefous.team_overlay(cibles, {"QQQ": 3000}, 40000, G)
+        total = out["a"]["QQQ"] + out["b"]["QQQ"] + 3000
+        self.assertAlmostEqual(total, G["poids_max_equipe_par_titre"] * 40000)
         self.assertEqual(out["b"]["TLT"], 1000)
-        self.assertIn("SPY", coupes)
+        self.assertIn("QQQ", coupes)
+        # Un indice large n'est pas une concentration : le S&P 500 n'est pas réduit.
+        self.assertEqual(out["a"]["SPY"] + out["b"]["SPY"], 18000)
+        self.assertNotIn("SPY", coupes)
 
     def test_rotation_plafonnee(self):
         trades, f = gardefous.limit_turnover({"SPY": 9000, "TLT": -5000}, 10000, G)
@@ -120,6 +129,32 @@ class GardeFous(unittest.TestCase):
                 gardefous.load(path)
         finally:
             shutil.rmtree(d)
+
+
+class NouveauxMetiers(unittest.TestCase):
+    def test_parking_place_le_cash_inactif(self):
+        p = marche()
+        avec_parking = 0
+        for i in range(400, 600, 7):
+            w = moteur.cibles("reversion", CFG["agents"]["contrarien"]["parametres"], CFG["univers"],
+                              {"parking": "SPY"}, p, i, G)
+            # Toujours investi à plein (moins le cash minimum), que la stratégie trouve des replis ou non.
+            self.assertAlmostEqual(sum(w.values()), 1 - G["cash_min"])
+            avec_parking += "SPY" in w
+        self.assertGreater(avec_parking, 0)
+
+    def test_double_momentum(self):
+        dates = ["d%03d" % k for k in range(300)]
+        monte = [100 * 1.001 ** k for k in range(300)]
+        baisse = [100 * 0.999 ** k for k in range(300)]
+        plat = [100.0] * 300
+        par = {"lookback": 252, "rebalance_days": 21}
+        p = data.Prices(dates, {"SPY": monte, "EFA": baisse, "IEF": plat})
+        self.assertEqual(strategies.targets("double_momentum", p, 299, ["SPY", "EFA", "IEF"], par,
+                                            {"refuge": "IEF"}), {"SPY": 1.0})
+        p = data.Prices(dates, {"SPY": baisse, "EFA": baisse, "IEF": monte})
+        self.assertEqual(strategies.targets("double_momentum", p, 299, ["SPY", "EFA", "IEF"], par,
+                                            {"refuge": "IEF"}), {"IEF": 1.0})
 
 
 class Portefeuilles(unittest.TestCase):

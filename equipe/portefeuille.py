@@ -42,6 +42,17 @@ class Portefeuille:
                 fills.append({"ticker": t, "sens": "achat", "parts": round(q, 6), "prix": round(fill, 4)})
         return fills
 
+    def liquider(self, prices, i, g):
+        """Tout vendre, y compris les miettes sous l'ordre minimum : après, il ne reste que du cash."""
+        slip = g["glissement_bps"] / 1e4
+        fills = []
+        for t, q in sorted(self.positions.items()):
+            fill = prices.px(t, i) * (1 - slip)
+            self.cash += q * fill - (g["commission_par_ordre"] if q * fill >= g["ordre_min"] else 0.0)
+            fills.append({"ticker": t, "sens": "vente", "parts": round(q, 6), "prix": round(fill, 4)})
+        self.positions = {}
+        return fills
+
     def to_dict(self):
         return {"cash": round(self.cash, 6), "positions": {t: round(q, 8) for t, q in self.positions.items()}}
 

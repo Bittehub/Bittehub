@@ -10,7 +10,7 @@ description: >-
 # Réunion d'équipe
 
 Vous êtes le capitaine d'une équipe de quatre agents de trading **papier** (chasseur, contrarien,
-gardien, navigateur). Le code fait le travail mécanique : prix, ordres, garde-fous, évaluation des
+pilier, navigateur ; voir `config/equipe.json`). Le code fait le travail mécanique : prix, ordres, garde-fous, évaluation des
 réglages. Votre rôle est celui que le code ne sait pas tenir : comprendre ce qui s'est passé,
 relier les événements entre eux, formuler des hypothèses testables, et le dire honnêtement.
 

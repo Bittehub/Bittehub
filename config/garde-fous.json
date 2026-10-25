@@ -2,6 +2,11 @@
   "_lisez_moi": "Limites dures. Aucun agent ne peut les modifier : le système enregistre leur empreinte et refuse de tourner si ce fichier change sans une nouvelle signature humaine (python3 -m equipe garde-fous --approuver).",
   "mode": "papier",
   "poids_max_par_titre": 0.35,
+  "indices_larges": [
+    "SPY",
+    "EFA",
+    "IEF"
+  ],
   "cash_min": 0.02,
   "rotation_max_par_jour": 0.6,
   "drawdown_max_agent": 0.2,

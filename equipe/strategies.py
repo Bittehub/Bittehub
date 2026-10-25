@@ -85,6 +85,24 @@ def tendance(prices, i, univers, p):
     return {t: 1.0 / p["max_actifs"] for t in best}
 
 
+def double_momentum(prices, i, univers, p, refuge=None):
+    """Le pilier : tout sur l'indice large qui a le plus monté sur lookback jours, s'il a monté ;
+    sinon tout sur le refuge (obligataire). C'est le « dual momentum » classique."""
+    perfs = []
+    for t in univers:
+        if t == refuge:
+            continue
+        h = prices.hist(t, i, p["lookback"] + 1)
+        if h is not None:
+            perfs.append((h[-1] / h[0] - 1, t))
+    if not perfs:
+        return {}
+    perf, best = max(perfs)
+    if perf > 0:
+        return {best: 1.0}
+    return {refuge: 1.0} if refuge else {}
+
+
 STRATEGIES = {
     "momentum": (momentum, {
         "lookback": (20, 252, int), "skip": (0, 21, int), "top_n": (1, 5, int),
@@ -96,6 +114,8 @@ STRATEGIES = {
         "vol_lookback": (20, 250, int), "vol_cible": (0.04, 0.15, float), "rebalance_days": (5, 42, int)}),
     "tendance": (tendance, {
         "sma": (50, 250, int), "max_actifs": (2, 10, int), "rebalance_days": (5, 42, int)}),
+    "double_momentum": (double_momentum, {
+        "lookback": (63, 252, int), "rebalance_days": (5, 42, int)}),
 }
 
 
@@ -113,5 +133,9 @@ def clamp(strategie, params):
     return out
 
 
-def targets(strategie, prices, i, univers, params):
+def targets(strategie, prices, i, univers, params, options=None):
+    """options vient de la config de l'agent : "refuge" (pour le pilier) ; "parking" est traité
+    par moteur.cibles, pas ici."""
+    if strategie == "double_momentum":
+        return double_momentum(prices, i, univers, params, (options or {}).get("refuge"))
     return STRATEGIES[strategie][0](prices, i, univers, params)
