@@ -1,0 +1,282 @@
+[
+ {
+  "date": "2014-05-19",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 2 (mutation) : sma 200→155, gain de score +0.30 (t=3.3), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.298
+ },
+ {
+  "date": "2014-05-27",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 2 (mutation) : rebalance_days 21→17, filtre_absolu 1→0, gain de score +0.32 (t=3.2), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.316
+ },
+ {
+  "date": "2014-10-09",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 3 (mutation) : top_n 3→4, gain de score +0.57 (t=6.3), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.57
+ },
+ {
+  "date": "2015-12-24",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 3 (mutation) : max_actifs 6→8, gain de score +0.31 (t=3.6), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.314
+ },
+ {
+  "date": "2017-06-01",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 4 (mutation) : sma 155→212, max_actifs 8→10, gain de score +0.29 (t=4.6), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.294
+ },
+ {
+  "date": "2017-07-28",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 4 (mutation) : rebalance_days 17→9, filtre_absolu 0→1, gain de score +0.26 (t=5.2), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.258
+ },
+ {
+  "date": "2017-08-25",
+  "type": "adoption",
+  "agent": "contrarien",
+  "texte": "contrarien passe en génération 2 (mentor:navigateur) : rebalance_days 5→8, gain de score +0.45 (t=4.4), 6/6 plis gagnés.",
+  "source": "mentor:navigateur",
+  "hypothese": "Se rapprocher du réglage de navigateur sur rebalance_days.",
+  "gain": 0.452
+ },
+ {
+  "date": "2018-06-20",
+  "type": "adoption",
+  "agent": "pilier",
+  "texte": "pilier passe en génération 2 (mutation) : rebalance_days 21→16, gain de score +0.30 (t=3.0), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.299
+ },
+ {
+  "date": "2018-06-20",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 5 (mutation) : rebalance_days 10→17, gain de score +0.30 (t=3.7), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.3
+ },
+ {
+  "date": "2019-01-25",
+  "type": "adoption",
+  "agent": "contrarien",
+  "texte": "contrarien passe en génération 3 (mentor:navigateur) : rebalance_days 8→12, gain de score +0.32 (t=3.7), 6/6 plis gagnés.",
+  "source": "mentor:navigateur",
+  "hypothese": "Se rapprocher du réglage de navigateur sur rebalance_days.",
+  "gain": 0.32
+ },
+ {
+  "date": "2020-03-12",
+  "type": "coupe_circuit",
+  "agent": "chasseur",
+  "texte": "chasseur perd 23.0 % depuis son pic : tout en cash, pause et rééducation."
+ },
+ {
+  "date": "2020-03-12",
+  "type": "coupe_circuit",
+  "agent": "contrarien",
+  "texte": "contrarien perd 26.2 % depuis son pic : tout en cash, pause et rééducation."
+ },
+ {
+  "date": "2020-03-12",
+  "type": "coupe_circuit",
+  "agent": "pilier",
+  "texte": "pilier perd 26.2 % depuis son pic : tout en cash, pause et rééducation."
+ },
+ {
+  "date": "2020-03-16",
+  "type": "coupe_circuit",
+  "agent": "navigateur",
+  "texte": "navigateur perd 21.5 % depuis son pic : tout en cash, pause et rééducation."
+ },
+ {
+  "date": "2020-03-27",
+  "type": "reprise",
+  "agent": "chasseur",
+  "texte": "chasseur reprend le travail : score de validation 0.45 sur 6 plis.",
+  "source": "inchange"
+ },
+ {
+  "date": "2020-03-27",
+  "type": "reprise",
+  "agent": "contrarien",
+  "texte": "contrarien reprend le travail : score de validation 0.46 sur 6 plis.",
+  "source": "inchange"
+ },
+ {
+  "date": "2020-03-27",
+  "type": "reprise",
+  "agent": "pilier",
+  "texte": "pilier reprend le travail : score de validation 0.24 sur 6 plis.",
+  "source": "inchange"
+ },
+ {
+  "date": "2020-04-03",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 5 (mentor:pilier) : lookback 126→189, rebalance_days 9→12, gain de score +0.48 (t=4.0), 6/6 plis gagnés.",
+  "source": "mentor:pilier",
+  "hypothese": "Se rapprocher du réglage de pilier sur lookback, rebalance_days.",
+  "gain": 0.481
+ },
+ {
+  "date": "2020-04-03",
+  "type": "reprise",
+  "agent": "navigateur",
+  "texte": "navigateur reprend le travail : score de validation 0.62 sur 6 plis.",
+  "source": "inchange"
+ },
+ {
+  "date": "2021-06-14",
+  "type": "adoption",
+  "agent": "contrarien",
+  "texte": "contrarien passe en génération 4 (mutation) : rebalance_days 12→16, gain de score +0.33 (t=4.4), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.334
+ },
+ {
+  "date": "2022-05-04",
+  "type": "adoption",
+  "agent": "contrarien",
+  "texte": "contrarien passe en génération 5 (mutation) : lookback 20→36, gain de score +0.30 (t=3.5), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.303
+ },
+ {
+  "date": "2022-09-22",
+  "type": "coupe_circuit",
+  "agent": "pilier",
+  "texte": "pilier perd 20.0 % depuis son pic : tout en cash, pause et rééducation."
+ },
+ {
+  "date": "2022-10-11",
+  "type": "reprise",
+  "agent": "pilier",
+  "texte": "pilier reprend le travail : score de validation 0.13 sur 6 plis.",
+  "source": "inchange"
+ },
+ {
+  "date": "2023-05-03",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 6 (mentor:contrarien) : lookback 189→112, rebalance_days 12→14, gain de score +0.33 (t=4.1), 6/6 plis gagnés.",
+  "source": "mentor:contrarien",
+  "hypothese": "Se rapprocher du réglage de contrarien sur lookback, rebalance_days, top_n.",
+  "gain": 0.325
+ },
+ {
+  "date": "2023-09-26",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 7 (mutation) : lookback 112→85, gain de score +0.56 (t=3.3), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.565
+ },
+ {
+  "date": "2024-02-20",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 6 (mutation) : rebalance_days 17→9, gain de score +0.29 (t=3.0), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.293
+ },
+ {
+  "date": "2024-11-26",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 8 (mutation) : rebalance_days 14→23, gain de score +0.42 (t=4.6), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.425
+ },
+ {
+  "date": "2025-03-05",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 7 (mutation) : sma 212→250, rebalance_days 9→17, gain de score +0.55 (t=3.2), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.546
+ },
+ {
+  "date": "2025-07-15",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 9 (mutation) : lookback 85→38, rebalance_days 23→30, gain de score +0.52 (t=4.6), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.515
+ },
+ {
+  "date": "2025-10-08",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 10 (mentor:navigateur) : rebalance_days 30→24, gain de score +0.33 (t=4.7), 6/6 plis gagnés.",
+  "source": "mentor:navigateur",
+  "hypothese": "Se rapprocher du réglage de navigateur sur rebalance_days.",
+  "gain": 0.334
+ },
+ {
+  "date": "2025-12-26",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 11 (mentor:contrarien) : lookback 38→37, rebalance_days 24→20, gain de score +0.49 (t=3.3), 6/6 plis gagnés.",
+  "source": "mentor:contrarien",
+  "hypothese": "Se rapprocher du réglage de contrarien sur lookback, rebalance_days, top_n.",
+  "gain": 0.493
+ },
+ {
+  "date": "2026-02-18",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 12 (mutation) : lookback 37→20, gain de score +0.41 (t=3.9), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.405
+ },
+ {
+  "date": "2026-05-14",
+  "type": "adoption",
+  "agent": "navigateur",
+  "texte": "navigateur passe en génération 8 (mentor:chasseur) : rebalance_days 17→18, gain de score +0.27 (t=3.4), 6/6 plis gagnés.",
+  "source": "mentor:chasseur",
+  "hypothese": "Se rapprocher du réglage de chasseur sur rebalance_days.",
+  "gain": 0.265
+ },
+ {
+  "date": "2026-06-12",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 13 (mutation) : rebalance_days 20→16, gain de score +0.83 (t=4.6), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.827
+ },
+ {
+  "date": "2026-06-22",
+  "type": "adoption",
+  "agent": "contrarien",
+  "texte": "contrarien passe en génération 6 (mutation) : trend_sma 200→158, rebalance_days 16→20, gain de score +0.39 (t=4.5), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.389
+ },
+ {
+  "date": "2026-09-30",
+  "type": "adoption",
+  "agent": "chasseur",
+  "texte": "chasseur passe en génération 14 (mutation) : top_n 4→5, gain de score +0.36 (t=5.7), 6/6 plis gagnés.",
+  "source": "mutation",
+  "gain": 0.364
+ }
+]
