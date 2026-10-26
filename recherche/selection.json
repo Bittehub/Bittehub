@@ -1,0 +1,20 @@
+{
+  "fixee_le": "2026-10-26",
+  "regle": "Équipe au meilleur Sharpe (en excès des bons du Trésor) sur la conception 2014-2026 ; à égalité, la plus faible perte maximale. 81 essais consignés avant la sélection.",
+  "principale": {
+    "nom": "T2",
+    "membres": [["agent", "contrarien"], ["agent", "navigateur"], ["candidat", "baa_equilibre"], ["candidat", "all_weather"]],
+    "reequilibrage_capital_jours": 21
+  },
+  "references": {
+    "T0 équipe actuelle": {"membres": [["agent", "chasseur"], ["agent", "contrarien"], ["agent", "pilier"], ["agent", "navigateur"]], "reequilibrage_capital_jours": 0},
+    "SPY": {"membres": [["candidat", "spy"]], "reequilibrage_capital_jours": 0},
+    "60/40": {"membres": [["candidat", "60_40"]], "reequilibrage_capital_jours": 0}
+  },
+  "criteres_succes": [
+    "Sharpe de T2 supérieur à celui du SPY",
+    "Sharpe de T2 supérieur à celui de l'équipe actuelle (T0)",
+    "Perte maximale de T2 inférieure à celle du SPY",
+    "Sharpe de T2 au moins égal à celui du 60/40 (sinon, un portefeuille passif suffit)"
+  ]
+}
