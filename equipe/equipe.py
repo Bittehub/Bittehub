@@ -70,7 +70,8 @@ def creer(ch, prices, debut=None, garde_fous_sha=None):
 
 
 def avancer(etat, prices, g, cfg, propositions, jusqu_a=None, evolution=True, log=None):
-    """Fait tourner chaque jour pas encore traité, jusqu'à `jusqu_a` inclus. Rend les événements."""
+    """Fait tourner chaque jour pas encore traité, jusqu'à `jusqu_a` inclus. Rend les événements.
+    evolution : "auto", "conseil" ou "non" (True et False valent "auto" et "non")."""
     ev = []
     start = sum(1 for d in prices.dates if etat["au"] and d <= etat["au"])
     end = len(prices) if jusqu_a is None else sum(1 for d in prices.dates if d <= jusqu_a)
@@ -91,7 +92,7 @@ def lecons(evenements):
     """Ce qui mérite d'aller dans le savoir partagé de l'équipe."""
     out = []
     for e in evenements:
-        if e["type"] in ("adoption", "coupe_circuit", "reprise", "concentration"):
+        if e["type"] in ("adoption", "adoption_humaine", "recommandation", "coupe_circuit", "reprise", "concentration"):
             out.append({k: e[k] for k in ("date", "type", "agent", "texte", "source", "hypothese", "gain")
                         if k in e and e[k] is not None})
     return out

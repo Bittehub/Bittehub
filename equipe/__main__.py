@@ -77,7 +77,8 @@ def cmd_quotidien(ch, a):
         sys.exit("L'équipe a été créée sur des données « %s » mais le cache contient « %s »."
                  % (etat["source_donnees"], prices.source))
     props = lire_json(ch.propositions, [])
-    ev, n = avancer(etat, prices, g, cfg, props, a.jusqu_a, evolution=not a.sans_evolution)
+    ev, n = avancer(etat, prices, g, cfg, props, a.jusqu_a,
+                    evolution="non" if a.sans_evolution else cfg.get("evolution", "auto"))
     sauver(ch, etat, ev, props)
     md, page = _ecrire_rapports(ch, etat, "dernier", "Équipe de trading")
     print("%d jour(s) traité(s), à jour au %s. %d événement(s)." % (n, etat["au"], len(ev)))
@@ -96,7 +97,7 @@ def _backtest(ch, nom, debut, fin, evolution, prices):
     cfg, _ = charger_config(ch)
     etat = creer(ch, prices, debut=debut)
     props = []
-    print("Backtest « %s » (%s)…" % (nom, "avec évolution" if evolution else "réglages figés"))
+    print("Backtest « %s » (évolution : %s)…" % (nom, {True: "auto", False: "non"}.get(evolution, evolution)))
     ev, _ = avancer(etat, prices, g, cfg, props, fin, evolution=evolution, log=print)
     sauver(bt, etat, ev, props)
     md, page = _ecrire_rapports(bt, etat, "backtest-" + nom, "Backtest « %s »" % nom)
@@ -107,7 +108,8 @@ def cmd_backtest(ch, a):
     """Rejoue l'équipe sur le passé, dans un dossier à part. Avec --comparer, rejoue aussi la même
     équipe aux réglages figés : c'est le seul moyen honnête de savoir si l'évolution sert à quelque chose."""
     prices = charger_prix(ch)
-    etat, md, page = _backtest(ch, a.nom, a.debut, a.fin, not a.sans_evolution, prices)
+    cfg, _ = charger_config(ch)
+    etat, md, page = _backtest(ch, a.nom, a.debut, a.fin, "non" if a.sans_evolution else cfg.get("evolution", "auto"), prices)
     print(open(md).read())
     print("Tableau de bord : %s" % page)
     if not a.comparer:
@@ -116,7 +118,7 @@ def cmd_backtest(ch, a):
     s, sf = rapport.synthese(etat), rapport.synthese(fige)
     lignes = ["", "## L'évolution a-t-elle servi ?", "",
               "| | Rendement | Sharpe | Drawdown max |", "|---|---:|---:|---:|"]
-    for nom, m in (("Équipe qui évolue", s["equipe"]), ("Même équipe, réglages figés", sf["equipe"]),
+    for nom, m in (("Équipe (évolution : %s)" % cfg.get("evolution", "auto"), s["equipe"]), ("Même équipe, réglages figés", sf["equipe"]),
                    ("Référence %s" % s["reference_ticker"], s["reference"])):
         lignes.append("| %s | %+.1f %% | %.2f | %.1f %% |" % (nom, m["rendement"] * 100, m["sharpe"], m["drawdown_max"] * 100))
     d = s["equipe"]["sharpe"] - sf["equipe"]["sharpe"]
@@ -177,6 +179,35 @@ def cmd_proposer(ch, a):
     print("Proposition %s enregistrée pour %s : %s" % (pid, a.agent, params))
 
 
+def cmd_adopter(ch, a):
+    """Décision humaine : appliquer un réglage, par exemple une recommandation de l'entraîneur."""
+    etat = lire_json(ch.etat)
+    if a.agent not in etat["agents"]:
+        sys.exit("Agent inconnu : %s (connus : %s)" % (a.agent, ", ".join(etat["agents"])))
+    ag = etat["agents"][a.agent]
+    b = strategies.bounds(ag["strategie"])
+    params = dict(ag["parametres"])
+    for kv in a.param:
+        k, _, v = kv.partition("=")
+        if k not in b:
+            sys.exit("Paramètre inconnu pour %s : %s (connus : %s)" % (a.agent, k, ", ".join(b)))
+        params[k] = v
+    params = strategies.clamp(ag["strategie"], {k: float(v) for k, v in params.items()})
+    if not sys.stdin.isatty():
+        sys.exit("L'adoption d'un réglage est une décision humaine : lancez-la dans un terminal interactif.")
+    print("%s : %s\n   → %s" % (a.agent, ag["parametres"], params))
+    if input("Adopter ce réglage ? Tapez OUI : ").strip() != "OUI":
+        sys.exit("Rien n'a changé.")
+    ancien = ag["parametres"]
+    ag["parametres"], ag["dernier_changement"] = params, etat["au"]
+    ag["generation"] += 1
+    ev = [{"date": etat["au"], "type": "adoption_humaine", "agent": a.agent,
+           "changements": {k: [ancien[k], params[k]] for k in params if ancien[k] != params[k]},
+           "texte": "Décision humaine : %s passe en génération %d avec %s." % (a.agent, ag["generation"], params)}]
+    sauver(ch, etat, ev, lire_json(ch.propositions, []))
+    print("Adopté.")
+
+
 def cmd_statut(ch, a):
     etat = lire_json(ch.etat)
     if not etat:
@@ -212,6 +243,9 @@ def main(argv=None):
     x.add_argument("--comparer", action="store_true", help="rejoue aussi l'équipe aux réglages figés")
     sp.add_parser("rapport", help="réécrit le rapport")
     sp.add_parser("statut", help="résumé en une ligne par agent")
+    x = sp.add_parser("adopter", help="décision humaine : appliquer un réglage")
+    x.add_argument("--agent", required=True)
+    x.add_argument("--param", action="append", required=True, metavar="CLE=VALEUR")
     x = sp.add_parser("garde-fous", help="affiche ou signe les garde-fous")
     x.add_argument("--approuver", action="store_true")
     x = sp.add_parser("proposer", help="propose un réglage à tester")
@@ -223,7 +257,7 @@ def main(argv=None):
     ch = Chemins()
     {"telecharger": cmd_telecharger, "synthetique": cmd_synthetique, "init": cmd_init, "quotidien": cmd_quotidien,
      "backtest": cmd_backtest, "rapport": cmd_rapport, "statut": cmd_statut, "garde-fous": cmd_garde_fous,
-     "proposer": cmd_proposer}[a.cmd](ch, a)
+     "proposer": cmd_proposer, "adopter": cmd_adopter}[a.cmd](ch, a)
 
 
 if __name__ == "__main__":

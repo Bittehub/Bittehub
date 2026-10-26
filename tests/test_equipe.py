@@ -311,6 +311,23 @@ class Equipe(Bac):
         self.assertEqual([x["agent"] for x in ev], ["navigateur"])
         self.assertIn(ev[0]["type"], ("reprise", "pause_prolongee"))
 
+    def test_mode_conseil_recommande_sans_jamais_changer_les_reglages(self):
+        p = self.prices
+        cfg = dict(CFG_RAPIDE)
+        g = dict(G, plis_gagnes_min=1, t_stat_min=-99, marge_adoption=-99)  # tout candidat passe
+        conseil = creer(self.ch, p, debut=p.dates[300])
+        fige = creer(self.ch, p, debut=p.dates[300])
+        props = [{"id": "x", "agent": "contrarien", "parametres": {"lookback": 40}, "hypothese": "t",
+                  "statut": "en_attente"}]
+        ev, _ = avancer(conseil, p, g, cfg, props, p.dates[450], evolution="conseil")
+        avancer(fige, p, g, cfg, [], p.dates[450], evolution="non")
+        self.assertTrue(any(e["type"] == "recommandation" for e in ev))
+        self.assertFalse(any(e["type"] == "adoption" for e in ev))
+        self.assertIn(props[0]["statut"], ("recommandee", "rejetee"))
+        for n in conseil["agents"]:
+            self.assertEqual(conseil["agents"][n]["parametres"], fige["agents"][n]["parametres"])
+            self.assertEqual(conseil["agents"][n]["historique"], fige["agents"][n]["historique"])
+
     def test_valeur_equipe_egale_somme_des_portefeuilles(self):
         p = self.prices
         e = creer(self.ch, p, debut=p.dates[300])

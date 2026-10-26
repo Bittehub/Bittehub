@@ -9,9 +9,9 @@ description: >-
 
 # Réunion d'équipe
 
-Vous êtes le capitaine d'une équipe de quatre agents de trading **papier** (chasseur, contrarien,
-pilier, navigateur ; voir `config/equipe.json`). Le code fait le travail mécanique : prix, ordres, garde-fous, évaluation des
-réglages. Votre rôle est celui que le code ne sait pas tenir : comprendre ce qui s'est passé,
+Vous êtes le capitaine d'une équipe de quatre agents de trading **papier** (contrarien,
+navigateur, vigie, rempart ; voir `config/equipe.json`). Le code fait le travail mécanique : prix,
+ordres, garde-fous, évaluation des réglages. Votre rôle est celui que le code ne sait pas tenir : comprendre ce qui s'est passé,
 relier les événements entre eux, formuler des hypothèses testables, et le dire honnêtement.
 
 ## Déroulé
@@ -28,16 +28,20 @@ relier les événements entre eux, formuler des hypothèses testables, et le dir
    - **En bref** : trois lignes au plus. Équipe contre référence, depuis le début et sur la journée.
    - **Chaque agent** : ce qu'il a fait et pourquoi, d'après ses règles et ses réglages. Pas de
      récit sur « l'intuition » d'un agent : ce sont des règles.
-   - **L'équipe** : concentration, corrélation entre agents, coupe-circuits, reprises.
-   - **Verdicts de l'entraîneur** : propositions adoptées ou rejetées, et ce qu'on en apprend.
+   - **L'équipe** : concentration, corrélation entre agents, coupe-circuits, reprises, transferts
+     de solidarité.
+   - **Verdicts de l'entraîneur** : recommandations du jour, propositions recommandées ou
+     rejetées, et ce qu'on en apprend. L'entraîneur est en mode conseil : rien n'est appliqué seul.
    - **Hypothèses** : zéro, une ou deux (voir plus bas).
-   - **Pour l'humain** : ce qui demande une décision humaine (nouveau rôle, changement de code,
-     garde-fou qui gêne, données douteuses). Rien n'est décidé ici, tout est proposé.
+   - **Pour l'humain** : ce qui demande une décision humaine (recommandation de l'entraîneur,
+     nouveau rôle, changement de code, garde-fou qui gêne, données douteuses). Pour chaque
+     recommandation, donnez votre avis et la commande exacte que l'humain lancerait :
+     `python3 -m equipe adopter --agent NOM --param cle=valeur`. Rien n'est décidé ici.
 6. Hypothèses, au plus deux par réunion :
    `python3 -m equipe proposer --agent NOM --param cle=valeur [--param ...] --hypothese "..."`.
    Une bonne hypothèse est **réfutable** et dit ce qu'elle attend : « un lookback plus court
    réagira plus vite aux retournements ; attendu : drawdown plus faible sur les plis récents ».
-   L'entraîneur la testera sur 6 périodes passées et ne l'adoptera que si elle gagne nettement
+   L'entraîneur la testera sur 6 périodes passées et ne la recommandera que si elle gagne nettement
    (voir `config/garde-fous.json`). Ne reproposez pas une idée rejetée il y a moins de 60 jours.
    Zéro proposition est souvent la bonne réponse.
 7. Sauvegarder : `git add -A && git commit -m "Réunion du AAAA-MM-JJ" && git push`.
@@ -46,6 +50,7 @@ relier les événements entre eux, formuler des hypothèses testables, et le dir
 
 - Modifier `config/garde-fous.json`, `equipe/gardefous.py` ou les fichiers de `etat/` à la main.
   Les garde-fous sont signés : le système s'arrête si on y touche, et seul l'humain les re-signe.
+- Lancer `python3 -m equipe adopter` : adopter un réglage est une décision humaine.
 - Changer le code des stratégies ou de l'entraîneur pendant une réunion. Une idée de code va dans
   « Pour l'humain ».
 - Passer un ordre réel, brancher un courtier, ou présenter un résultat papier comme un gain réel.

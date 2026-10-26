@@ -99,23 +99,30 @@ def _mentor(nom, etat):
 def eligible(agent, prices, i, g):
     if agent["en_pause"]:
         return i - prices.index_of(agent["pause_depuis"]) >= g["pause_min_jours"]
-    last = agent["dernier_changement"]
-    return last is None or i - prices.index_of(last) >= g["jours_min_entre_changements"]
+    dates = [d for d in (agent["dernier_changement"], agent.get("derniere_recommandation")) if d]
+    return not dates or i - prices.index_of(max(dates)) >= g["jours_min_entre_changements"]
 
 
-def evoluer(etat, prices, i, g, cfg, propositions, adapter=True):
+MODES = {True: "auto", False: "non"}
+
+
+def evoluer(etat, prices, i, g, cfg, propositions, adapter="auto"):
     """Évalue chaque agent éligible après la clôture du jour i. Rend les événements du journal.
 
-    Avec adapter=False (équipe aux réglages figés), aucun réglage ne change, mais un agent en pause
-    peut toujours reprendre si ses réglages actuels ont un score positif : sans cela, une équipe
-    figée resterait en cash pour toujours après un coupe-circuit."""
+    Trois modes :
+    - "auto" : un meilleur réglage prouvé est adopté aussitôt ;
+    - "conseil" : il est seulement recommandé (événement « recommandation ») ; un humain décide
+      avec `python3 -m equipe adopter`. Un agent en pause reprend avec ses réglages actuels ;
+    - "non" : rien n'est évalué, sauf la reprise des agents en pause avec leurs réglages actuels
+      (sans cela, une équipe figée resterait en cash pour toujours après un coupe-circuit)."""
+    mode = MODES.get(adapter, adapter)
     date = prices.dates[i]
     plis = _plis(i + 1, cfg)
     if plis is None:
         return []
     ev = []
     candidats_agents = [n for n, a in etat["agents"].items()
-                        if eligible(a, prices, i, g) and (adapter or a["en_pause"])]
+                        if eligible(a, prices, i, g) and (mode != "non" or a["en_pause"])]
     if not candidats_agents:
         return []
     equipiers = {}
@@ -125,9 +132,10 @@ def evoluer(etat, prices, i, g, cfg, propositions, adapter=True):
     for nom in candidats_agents:
         a = etat["agents"][nom]
         rng = random.Random("%s-%s" % (nom, date))
-        mes_props = [p for p in propositions if p["agent"] == nom and p["statut"] == "en_attente"] if adapter else []
+        explorer = mode == "auto" or (mode == "conseil" and not a["en_pause"])
+        mes_props = [p for p in propositions if p["agent"] == nom and p["statut"] == "en_attente"] if explorer else []
         cands = (_candidats(nom, a, _mentor(nom, etat), mes_props, rng, g["candidats_max_par_evaluation"])
-                 if adapter else [])
+                 if explorer else [])
         base_scores, _ = equipiers[nom]
         base = sum(base_scores) / len(base_scores)
         best = None
@@ -150,7 +158,8 @@ def evoluer(etat, prices, i, g, cfg, propositions, adapter=True):
 
         for prop in mes_props:
             r = resultats.get(prop["id"])
-            prop["statut"] = "adoptee" if best and best["source"] == "claude:%s" % prop["id"] else "rejetee"
+            retenue = best and best["source"] == "claude:%s" % prop["id"]
+            prop["statut"] = ("adoptee" if mode == "auto" else "recommandee") if retenue else "rejetee"
             prop["evaluee_le"] = date
             prop["resultat"] = r and {k: r[k] for k in ("gain", "t", "plis_gagnes", "correlation_max")}
 
@@ -173,7 +182,18 @@ def evoluer(etat, prices, i, g, cfg, propositions, adapter=True):
                            "texte": "%s reste en pause : aucun réglage n'a un score positif sur les plis récents." % nom})
             continue
 
-        if best:
+        if best and mode == "conseil":
+            a["derniere_recommandation"] = date
+            diff = {k: [a["parametres"][k], best["parametres"][k]] for k in a["parametres"]
+                    if a["parametres"][k] != best["parametres"][k]}
+            ev.append({"date": date, "type": "recommandation", "agent": nom, "changements": diff,
+                       "parametres": best["parametres"], "source": best["source"], "gain": best["gain"],
+                       "plis_gagnes": best["plis_gagnes"], "hypothese": best["hypothese"],
+                       "texte": "L'entraîneur recommande pour %s (%s) : %s, gain de score %+.2f (t=%.1f), %d/%d plis "
+                                "gagnés. À décider par un humain." % (
+                                    nom, best["source"], ", ".join("%s %s→%s" % (k, v[0], v[1]) for k, v in diff.items()),
+                                    best["gain"], best["t"], best["plis_gagnes"], len(plis))})
+        elif best:
             ancien = a["parametres"]
             a["parametres"], a["dernier_changement"] = best["parametres"], date
             a["generation"] += 1

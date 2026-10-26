@@ -26,6 +26,7 @@
     "XLV"
   ],
   "reequilibrage_capital_jours": 21,
+  "evolution": "conseil",
   "evolution_tous_les_jours": 5,
   "plis": 6,
   "longueur_pli": 126,
