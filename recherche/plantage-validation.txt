@@ -1,0 +1,2 @@
+Validation lancée le 2026-10-26T01:12:33+00:00 sur 2004-03-01 → 2013-12-31
+Premier lancement interrompu par un plantage (titre sans prix en 2004) avant tout résultat affiché ; corrigé puis relancé.

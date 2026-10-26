@@ -35,7 +35,9 @@ def _trades(cible, actuel):
 def cibles(strategie, params, univers, options, prices, i, g):
     """Poids cibles bornés par les garde-fous. Avec un "parking", la part que la stratégie laisse
     en cash est placée sur cet indice au lieu de dormir."""
-    w = gardefous.clip_targets(strategies.targets(strategie, prices, i, univers, params, options), g, univers)
+    w = strategies.targets(strategie, prices, i, univers, params, options)
+    # Un titre qui n'a pas encore de prix (pas encore coté) ne peut pas être acheté.
+    w = gardefous.clip_targets({t: x for t, x in w.items() if prices.px(t, i) is not None}, g, univers)
     parking = (options or {}).get("parking")
     if parking and prices.hist(parking, i, 1) is not None:
         reste = 1.0 - g["cash_min"] - sum(w.values())

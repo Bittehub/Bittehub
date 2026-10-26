@@ -180,8 +180,12 @@ def baa_agressif(prices, i, u, p):
 # --- Portefeuilles permanents -----------------------------------------------------------------
 
 def all_weather(prices, i, u, p):
-    """Approximation publique du portefeuille « All Weather » de Bridgewater (R. Dalio)."""
-    return {"SPY": 0.30, "TLT": 0.40, "IEF": 0.15, "GLD": 0.075, "DBC": 0.075}
+    """Approximation publique du portefeuille « All Weather » de Bridgewater (R. Dalio). Avant le
+    lancement d'un ETF (or fin 2004, matières premières 2006), sa part va aux autres au prorata."""
+    w = {"SPY": 0.30, "TLT": 0.40, "IEF": 0.15, "GLD": 0.075, "DBC": 0.075}
+    w = {t: x for t, x in w.items() if prices.hist(t, i, 1) is not None}
+    tot = sum(w.values())
+    return {t: x / tot for t, x in w.items()}
 
 
 def parite_risque(prices, i, u, p):
