@@ -157,6 +157,47 @@ class NouveauxMetiers(unittest.TestCase):
                                             {"refuge": "IEF"}), {"IEF": 1.0})
 
 
+class Execution(unittest.TestCase):
+    def test_plafond_de_rotation_etale_la_cible_sans_la_recalculer(self):
+        p = marche()
+        appels = []
+        vraie, bornes = strategies.STRATEGIES["momentum"]
+
+        def espion(prices, i, univers, par):
+            appels.append(i)
+            # Change de titres à chaque appel : une rotation complète, bien au-delà du plafond.
+            return {univers[(len(appels) * 3 + k) % len(univers)]: 1 / 3 for k in range(3)}
+
+        strategies.STRATEGIES["momentum"] = (espion, bornes)
+        try:
+            par = {"lookback": 126, "skip": 5, "top_n": 3, "rebalance_days": 10, "filtre_absolu": 1}
+            vals = moteur.simuler("momentum", par, CFG["univers"], p, 300, 360, G)
+        finally:
+            strategies.STRATEGIES["momentum"] = (vraie, bornes)
+        self.assertEqual(appels, list(range(300, 360, 10)))
+        self.assertEqual(len(vals), 60)
+
+    def test_la_cible_decidee_est_atteinte_en_plusieurs_jours(self):
+        p = marche()
+        g = dict(G, rotation_max_par_jour=0.3, glissement_bps=0)
+        w = {"QQQ": 0.33, "TLT": 0.33, "GLD": 0.32}
+        pf = Portefeuille(10000)
+        jours = 0
+        for i in range(400, 410):
+            v = pf.valeur(p, i)
+            trades, f = gardefous.limit_turnover(
+                moteur._trades({t: x * v for t, x in w.items()}, pf.notionnels(p, i)), v, g)
+            pf.executer(trades, p, i, g)
+            jours += 1
+            if f >= 1:
+                break
+        self.assertEqual(jours, 4)
+        dernier = 399 + jours
+        poids = {t: x / pf.valeur(p, dernier) for t, x in pf.notionnels(p, dernier).items()}
+        for t in w:
+            self.assertAlmostEqual(poids[t], w[t], places=2)
+
+
 class Portefeuilles(unittest.TestCase):
     def test_aller_retour_sans_couts_conserve_le_cash(self):
         p = marche(50)
@@ -232,6 +273,21 @@ class Equipe(Bac):
                 self.assertIsInstance(a["parametres"][k], typ)
         self.assertIn(props[0]["statut"], ("adoptee", "rejetee"))
         self.assertIn("evaluee_le", props[0])
+
+    def test_equipe_figee_reglages_fixes_mais_reprise_possible(self):
+        p = self.prices
+        e = creer(self.ch, p, debut=p.dates[300])
+        avancer(e, p, G, CFG_RAPIDE, [], p.dates[400], evolution=False)
+        avant = {n: dict(a["parametres"]) for n, a in e["agents"].items()}
+        a = e["agents"]["navigateur"]
+        a["en_pause"], a["pause_depuis"] = True, p.dates[380]
+        props = [{"id": "x", "agent": "chasseur", "parametres": {"lookback": 60}, "hypothese": "t",
+                  "statut": "en_attente"}]
+        ev = entraineur.evoluer(e, p, 400, G, CFG_RAPIDE, props, adapter=False)
+        self.assertEqual({n: a["parametres"] for n, a in e["agents"].items()}, avant)
+        self.assertEqual(props[0]["statut"], "en_attente")
+        self.assertEqual([x["agent"] for x in ev], ["navigateur"])
+        self.assertIn(ev[0]["type"], ("reprise", "pause_prolongee"))
 
     def test_valeur_equipe_egale_somme_des_agents(self):
         p = self.prices

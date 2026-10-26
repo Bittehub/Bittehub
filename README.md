@@ -12,7 +12,7 @@ toucher.
 
 | Agent | Métier | Ce qu'il fait |
 |---|---|---|
-| **chasseur** | momentum | Achète les titres qui ont le plus monté sur une période donnée. |
+| **chasseur** | momentum ajusté du risque | Achète les titres qui montent le plus régulièrement (rendement divisé par la volatilité) ; le cash qu'il n'utilise pas est placé dans le S&P 500. |
 | **contrarien** | retour à la moyenne | Achète les replis excessifs à l'intérieur d'une tendance haussière ; le reste du temps, son argent est placé dans le S&P 500 au lieu de dormir. |
 | **pilier** | double momentum | Tout sur l'indice large (S&P 500 ou monde hors États-Unis) qui a le plus monté sur un an ; en obligations (IEF) si aucun ne monte. |
 | **navigateur** | suivi de tendance | Reste investi dans ce qui est au-dessus de sa moyenne mobile, sinon en cash. |
@@ -94,7 +94,7 @@ ni passer d'ordre réel. Une tâche planifiée peut la lancer chaque soir après
 | Poids max par titre (par agent) | 35 %, sauf indices larges (SPY, EFA, IEF) : 98 % |
 | Cash minimum | 2 % |
 | Poids max par titre (équipe entière) | 30 % |
-| Rotation max par jour | 60 % du portefeuille |
+| Rotation max par jour | 60 % du portefeuille (au-delà, la cible décidée est atteinte en plusieurs jours, sans être recalculée) |
 | Coupe-circuit | −20 % depuis le pic |
 | Pause minimum | 10 jours |
 | Délai entre deux changements de réglage | 21 jours |

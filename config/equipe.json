@@ -23,14 +23,16 @@
   "longueur_pli": 126,
   "agents": {
     "chasseur": {
-      "strategie": "momentum",
-      "role": "Achète ce qui monte le plus fort sur une période donnée.",
+      "strategie": "momentum_ajuste",
+      "role": "Achète ce qui monte le plus régulièrement (rendement divisé par la volatilité) ; le cash qu'il n'utilise pas est placé dans le S&P 500.",
       "parametres": {
         "lookback": 126,
-        "skip": 5,
         "top_n": 3,
         "rebalance_days": 21,
         "filtre_absolu": 1
+      },
+      "options": {
+        "parking": "SPY"
       }
     },
     "contrarien": {

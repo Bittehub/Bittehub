@@ -17,6 +17,7 @@ def nouvel_agent(nom, spec, capital, univers_equipe):
         "en_pause": False,
         "pause_depuis": None,
         "dernier_reequilibrage": None,
+        "cible_en_cours": None,
         "dernier_changement": None,
         "generation": 1,
     }
@@ -47,16 +48,17 @@ def cibles(strategie, params, univers, options, prices, i, g):
 def simuler(strategie, params, univers, prices, start, end, g, capital=10000.0, options=None):
     """Un agent seul, sur les jours [start, end) : sert à l'entraîneur pour comparer des réglages."""
     pf = Portefeuille(capital)
-    vals, last = [], None
+    vals, last, en_cours = [], None, None
     for i in range(start, end):
         if last is None or i - last >= params["rebalance_days"]:
+            en_cours, last = cibles(strategie, params, univers, options, prices, i, g), i
+        if en_cours is not None:
             v = pf.valeur(prices, i)
-            w = cibles(strategie, params, univers, options, prices, i, g)
             trades, f = gardefous.limit_turnover(
-                _trades({t: x * v for t, x in w.items()}, pf.notionnels(prices, i)), v, g)
+                _trades({t: x * v for t, x in en_cours.items()}, pf.notionnels(prices, i)), v, g)
             pf.executer(trades, prices, i, g)
             if f >= 1.0:
-                last = i
+                en_cours = None
         vals.append(pf.valeur(prices, i))
     return vals
 
@@ -77,18 +79,23 @@ def jour(etat, prices, i, g):
         dd = 1 - vals[n] / a["pic"]
         if not a["en_pause"] and dd >= g["drawdown_max_agent"]:
             fills = pfs[n].liquider(prices, i, g)
-            a["en_pause"], a["pause_depuis"] = True, date
+            a["en_pause"], a["pause_depuis"], a["cible_en_cours"] = True, date, None
             ev.append({"date": date, "type": "coupe_circuit", "agent": n, "drawdown": round(dd, 4),
                        "ordres": fills,
                        "texte": "%s perd %.1f %% depuis son pic : tout en cash, pause et rééducation."
                                 % (n, dd * 100)})
 
-    # 2. Chaque agent actif et dû propose ses cibles, bornées par les garde-fous.
+    # 2. Chaque agent actif et dû décide ses cibles, bornées par les garde-fous. Une cible que le
+    #    plafond de rotation n'a pas permis d'atteindre est poursuivie les jours suivants telle
+    #    quelle, sans être recalculée, jusqu'au prochain rééquilibrage prévu.
     voulues, fixes = {}, {}
     for n, a in agents.items():
         if not a["en_pause"] and _due(a, prices, i):
-            w = cibles(a["strategie"], a["parametres"], a["univers"], a.get("options"), prices, i, g)
-            voulues[n] = {t: x * vals[n] for t, x in w.items()}
+            a["cible_en_cours"] = cibles(a["strategie"], a["parametres"], a["univers"], a.get("options"),
+                                         prices, i, g)
+            a["dernier_reequilibrage"] = date
+        if not a["en_pause"] and a.get("cible_en_cours") is not None:
+            voulues[n] = {t: x * vals[n] for t, x in a["cible_en_cours"].items()}
         else:
             for t, v in pfs[n].notionnels(prices, i).items():
                 fixes[t] = fixes.get(t, 0.0) + v
@@ -106,7 +113,7 @@ def jour(etat, prices, i, g):
         trades, f = gardefous.limit_turnover(_trades(cible, pfs[n].notionnels(prices, i)), vals[n], g)
         fills = pfs[n].executer(trades, prices, i, g)
         if f >= 1.0:
-            a["dernier_reequilibrage"] = date
+            a["cible_en_cours"] = None
         if fills:
             ev.append({"date": date, "type": "ordres", "agent": n, "ordres": fills,
                        "poids_cibles": {t: round(v / vals[n], 4) for t, v in cible.items()},

@@ -103,14 +103,19 @@ def eligible(agent, prices, i, g):
     return last is None or i - prices.index_of(last) >= g["jours_min_entre_changements"]
 
 
-def evoluer(etat, prices, i, g, cfg, propositions):
-    """Évalue chaque agent éligible après la clôture du jour i. Rend les événements du journal."""
+def evoluer(etat, prices, i, g, cfg, propositions, adapter=True):
+    """Évalue chaque agent éligible après la clôture du jour i. Rend les événements du journal.
+
+    Avec adapter=False (équipe aux réglages figés), aucun réglage ne change, mais un agent en pause
+    peut toujours reprendre si ses réglages actuels ont un score positif : sans cela, une équipe
+    figée resterait en cash pour toujours après un coupe-circuit."""
     date = prices.dates[i]
     plis = _plis(i + 1, cfg)
     if plis is None:
         return []
     ev = []
-    candidats_agents = [n for n, a in etat["agents"].items() if eligible(a, prices, i, g)]
+    candidats_agents = [n for n, a in etat["agents"].items()
+                        if eligible(a, prices, i, g) and (adapter or a["en_pause"])]
     if not candidats_agents:
         return []
     equipiers = {}
@@ -120,8 +125,9 @@ def evoluer(etat, prices, i, g, cfg, propositions):
     for nom in candidats_agents:
         a = etat["agents"][nom]
         rng = random.Random("%s-%s" % (nom, date))
-        mes_props = [p for p in propositions if p["agent"] == nom and p["statut"] == "en_attente"]
-        cands = _candidats(nom, a, _mentor(nom, etat), mes_props, rng, g["candidats_max_par_evaluation"])
+        mes_props = [p for p in propositions if p["agent"] == nom and p["statut"] == "en_attente"] if adapter else []
+        cands = (_candidats(nom, a, _mentor(nom, etat), mes_props, rng, g["candidats_max_par_evaluation"])
+                 if adapter else [])
         base_scores, _ = equipiers[nom]
         base = sum(base_scores) / len(base_scores)
         best = None

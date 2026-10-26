@@ -6,8 +6,8 @@
  "garde_fous_sha": "8789754330fcc00f534f7f31624039dace61acd5b9035928c0b7a6218c650b90",
  "agents": {
   "chasseur": {
-   "strategie": "momentum",
-   "role": "Achète ce qui monte le plus fort sur une période donnée.",
+   "strategie": "momentum_ajuste",
+   "role": "Achète ce qui monte le plus régulièrement (rendement divisé par la volatilité) ; le cash qu'il n'utilise pas est placé dans le S&P 500.",
    "univers": [
     "SPY",
     "QQQ",
@@ -25,10 +25,11 @@
     "XLP",
     "XLU"
    ],
-   "options": {},
+   "options": {
+    "parking": "SPY"
+   },
    "parametres": {
     "lookback": 126,
-    "skip": 5,
     "top_n": 3,
     "rebalance_days": 21,
     "filtre_absolu": 1
@@ -43,6 +44,7 @@
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": null,
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   },
@@ -86,6 +88,7 @@
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": null,
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   },
@@ -114,6 +117,7 @@
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": null,
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   },
@@ -153,6 +157,7 @@
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": null,
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   }

@@ -35,6 +35,24 @@ def momentum(prices, i, univers, p):
     return {t: 1.0 / p["top_n"] for t in best}
 
 
+def momentum_ajuste(prices, i, univers, p):
+    """Le chasseur : les top_n meilleurs rendements sur lookback jours, divisés par leur volatilité.
+    Un titre qui monte régulièrement passe devant un titre qui monte autant mais en dents de scie."""
+    scores = []
+    for t in univers:
+        h = prices.hist(t, i, p["lookback"] + 1)
+        if h is None:
+            continue
+        perf = h[-1] / h[0] - 1
+        if p["filtre_absolu"] and perf <= 0:
+            continue
+        vol = _std(_rets(h))
+        if vol > 0:
+            scores.append((perf / vol, t))
+    best = [t for _, t in sorted(scores, reverse=True)[:p["top_n"]]]
+    return {t: 1.0 / p["top_n"] for t in best}
+
+
 def reversion(prices, i, univers, p):
     """Le contrarien : les replis les plus profonds (z-score) parmi les titres en tendance haussière."""
     picks = []
@@ -107,6 +125,9 @@ STRATEGIES = {
     "momentum": (momentum, {
         "lookback": (20, 252, int), "skip": (0, 21, int), "top_n": (1, 5, int),
         "rebalance_days": (5, 42, int), "filtre_absolu": (0, 1, int)}),
+    "momentum_ajuste": (momentum_ajuste, {
+        "lookback": (20, 252, int), "top_n": (1, 5, int), "rebalance_days": (5, 42, int),
+        "filtre_absolu": (0, 1, int)}),
     "reversion": (reversion, {
         "lookback": (5, 60, int), "trend_sma": (50, 250, int), "top_n": (1, 5, int),
         "z_entree": (0.5, 3.0, float), "rebalance_days": (3, 21, int)}),

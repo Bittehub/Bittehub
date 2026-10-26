@@ -79,8 +79,8 @@ def avancer(etat, prices, g, cfg, propositions, jusqu_a=None, evolution=True, lo
     for i in range(start, end):
         ev += moteur.jour(etat, prices, i, g)
         # Calendrier fixe (un jour de cotation sur N) : le même que l'on rattrape 1 jour ou 300.
-        if evolution and i % cfg["evolution_tous_les_jours"] == 0:
-            ev += entraineur.evoluer(etat, prices, i, g, cfg, propositions)
+        if i % cfg["evolution_tous_les_jours"] == 0:
+            ev += entraineur.evoluer(etat, prices, i, g, cfg, propositions, adapter=evolution)
         if log and (i - start + 1) % 126 == 0:
             log("… %s" % prices.dates[i])
     return ev, max(0, end - start)
