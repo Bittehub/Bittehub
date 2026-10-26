@@ -12,6 +12,7 @@ def nouvel_agent(nom, spec, capital, univers_equipe):
         "parametres": strategies.clamp(spec["strategie"], spec["parametres"]),
         "portefeuille": Portefeuille(capital).to_dict(),
         "capital_initial": capital,
+        "unites": capital,
         "historique": [],
         "pic": capital,
         "en_pause": False,
@@ -21,6 +22,12 @@ def nouvel_agent(nom, spec, capital, univers_equipe):
         "dernier_changement": None,
         "generation": 1,
     }
+
+
+def valeur_liquidative(agent, valeur):
+    """Ce que seraient devenus les capital_initial dollars de l'agent, hors transferts de
+    solidarité : sa performance propre, comme la valeur d'une part de fonds."""
+    return valeur * agent["capital_initial"] / agent.get("unites", agent["capital_initial"])
 
 
 def _due(agent, prices, i):
@@ -77,8 +84,9 @@ def jour(etat, prices, i, g):
 
     # 1. Coupe-circuit : un agent qui perd drawdown_max depuis son pic passe en cash et en pause.
     for n, a in agents.items():
-        a["pic"] = max(a["pic"], vals[n])
-        dd = 1 - vals[n] / a["pic"]
+        vl = valeur_liquidative(a, vals[n])
+        a["pic"] = max(a["pic"], vl)
+        dd = 1 - vl / a["pic"]
         if not a["en_pause"] and dd >= g["drawdown_max_agent"]:
             fills = pfs[n].liquider(prices, i, g)
             a["en_pause"], a["pause_depuis"], a["cible_en_cours"] = True, date, None
@@ -86,6 +94,10 @@ def jour(etat, prices, i, g):
                        "ordres": fills,
                        "texte": "%s perd %.1f %% depuis son pic : tout en cash, pause et rééducation."
                                 % (n, dd * 100)})
+
+    # 1 bis. Solidarité : tous les N jours, le capital des agents actifs est remis à parts égales.
+    #    Ceux qui ont gagné en cèdent à ceux qui ont perdu ; un agent en pause n'y participe pas.
+    ev += _solidarite(etat, pfs, vals, prices, i, g)
 
     # 2. Chaque agent actif et dû décide ses cibles, bornées par les garde-fous. Une cible que le
     #    plafond de rotation n'a pas permis d'atteindre est poursuivie les jours suivants telle
@@ -121,12 +133,48 @@ def jour(etat, prices, i, g):
                        "poids_cibles": {t: round(v / vals[n], 4) for t, v in cible.items()},
                        "rotation_reduite": round(f, 4) if f < 1 else None})
 
-    # 5. Consigner les valeurs de fin de journée.
+    # 5. Consigner les valeurs de fin de journée : la valeur liquidative de chaque agent (sa
+    #    performance propre) et la valeur réelle de l'équipe.
+    total = 0.0
     for n, a in agents.items():
         a["portefeuille"] = pfs[n].to_dict()
-        a["historique"].append([date, round(pfs[n].valeur(prices, i), 2)])
+        v = pfs[n].valeur(prices, i)
+        total += v
+        a["historique"].append([date, round(valeur_liquidative(a, v), 2)])
     ref = etat["reference"]
     ref["historique"].append([date, round(ref["parts"] * prices.px(ref["ticker"], i), 2)])
-    etat["equipe"]["historique"].append([date, round(sum(a["historique"][-1][1] for a in agents.values()), 2)])
+    etat["equipe"]["historique"].append([date, round(total, 2)])
     etat["au"] = date
     return ev
+
+
+def _solidarite(etat, pfs, vals, prices, i, g):
+    jours = etat.get("reequilibrage_capital_jours", 0)
+    eq = etat["equipe"]
+    last = eq.get("dernier_reequilibrage_capital")
+    if not jours or (last is not None and i - prices.index_of(last) < jours):
+        return []
+    eq["dernier_reequilibrage_capital"] = prices.dates[i]
+    actifs = [n for n, a in etat["agents"].items() if not a["en_pause"]]
+    if len(actifs) < 2:
+        return []
+    cible = sum(vals[n] for n in actifs) / len(actifs)
+    # Tous ou aucun : ne déplacer qu'une partie des agents vers la moyenne créerait ou détruirait
+    # de l'argent. On ne bouge rien si tous sont déjà à moins de 0,5 % de la moyenne.
+    if all(vals[n] > 0 and abs(cible / vals[n] - 1) < 0.005 for n in actifs):
+        return []
+    transferts, couts = {}, 0.0
+    for n in actifs:
+        a = etat["agents"][n]
+        f = cible / vals[n]
+        couts += pfs[n].redimensionner(f, prices, i, g)
+        a["unites"] = a.get("unites", a["capital_initial"]) * f
+        transferts[n] = round(cible - vals[n], 2)
+        vals[n] = pfs[n].valeur(prices, i)
+    if not transferts:
+        return []
+    donne = sum(-v for v in transferts.values() if v < 0)
+    return [{"date": prices.dates[i], "type": "solidarite", "transferts": transferts, "cout": round(couts, 2),
+             "texte": "Solidarité : %.0f $ passent des agents en avance (%s) aux agents en retard (%s)."
+                      % (donne, ", ".join(n for n, v in transferts.items() if v < 0),
+                         ", ".join(n for n, v in transferts.items() if v > 0))}]

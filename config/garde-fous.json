@@ -4,8 +4,15 @@
   "poids_max_par_titre": 0.35,
   "indices_larges": [
     "SPY",
+    "IWM",
     "EFA",
-    "IEF"
+    "EEM",
+    "IEF",
+    "TLT",
+    "SHY",
+    "AGG",
+    "LQD",
+    "TIP"
   ],
   "cash_min": 0.02,
   "rotation_max_par_jour": 0.6,

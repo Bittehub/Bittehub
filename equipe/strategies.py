@@ -121,6 +121,67 @@ def double_momentum(prices, i, univers, p, refuge=None):
     return {refuge: 1.0} if refuge else {}
 
 
+M = 21  # jours de cotation par mois
+
+
+def _w13612(prices, i, t):
+    """Momentum « 13612W » de Keller : (12·r1 + 4·r3 + 2·r6 + r12) / 4, en mois de 21 jours."""
+    h = prices.hist(t, i, 12 * M + 1)
+    if h is None:
+        return None
+    r = [h[-1] / h[-1 - k * M] - 1 for k in (1, 3, 6, 12)]
+    return (12 * r[0] + 4 * r[1] + 2 * r[2] + r[3]) / 4
+
+
+def _sma12(prices, i, t):
+    """Prix rapporté à la moyenne de ses 13 derniers prix mensuels, le dernier compris."""
+    h = prices.hist(t, i, 12 * M + 1)
+    if h is None:
+        return None
+    return h[-1] / (sum(h[-1 - k * M] for k in range(13)) / 13)
+
+
+def _meilleurs(scores, k):
+    return [t for _, t in sorted(((s, t) for t, s in scores.items() if s is not None), reverse=True)[:k]]
+
+
+# Univers de Keller (2022), avec les équivalents anciens : VWO→EEM, VEA/VGK→EFA, BND→AGG, BIL→SHY.
+BAA_CANARIS = ["SPY", "EEM", "EFA", "AGG"]
+BAA_OFFENSIF = ["SPY", "QQQ", "IWM", "EFA", "EWJ", "EEM", "VNQ", "DBC", "GLD", "TLT", "HYG", "LQD"]
+BAA_DEFENSIF = ["TIP", "DBC", "SHY", "IEF", "TLT", "LQD", "AGG"]
+
+
+def baa(prices, i, univers, p):
+    """La vigie (Bold Asset Allocation, Keller 2022) : si les 4 canaris (actions US, émergents,
+    monde, obligations) ont un momentum positif, les top_offensif meilleurs de 12 actifs au ratio
+    SMA12 ; sinon les top_defensif meilleurs de 7 actifs défensifs, remplacés par des bons du Trésor
+    s'ils font moins bien qu'eux."""
+    canaris = [_w13612(prices, i, t) for t in BAA_CANARIS]
+    if None in canaris:
+        return {}
+    if all(c > 0 for c in canaris):
+        best = _meilleurs({t: _sma12(prices, i, t) for t in BAA_OFFENSIF}, p["top_offensif"])
+        return {t: 1.0 / len(best) for t in best}
+    sc = {t: _sma12(prices, i, t) for t in BAA_DEFENSIF}
+    ref = sc.get("SHY")
+    w = {}
+    for t in _meilleurs(sc, p["top_defensif"]):
+        dest = t if ref is None or sc[t] >= ref else "SHY"
+        w[dest] = w.get(dest, 0.0) + 1.0 / p["top_defensif"]
+    return w
+
+
+ALL_WEATHER = {"SPY": 0.30, "TLT": 0.40, "IEF": 0.15, "GLD": 0.075, "DBC": 0.075}
+
+
+def all_weather(prices, i, univers, p):
+    """Le rempart : l'approximation publique du portefeuille « All Weather » de Bridgewater.
+    Un actif pas encore coté voit sa part répartie entre les autres."""
+    w = {t: x for t, x in ALL_WEATHER.items() if prices.hist(t, i, 1) is not None}
+    tot = sum(w.values())
+    return {t: x / tot for t, x in w.items()}
+
+
 STRATEGIES = {
     "momentum": (momentum, {
         "lookback": (20, 252, int), "skip": (0, 21, int), "top_n": (1, 5, int),
@@ -137,6 +198,9 @@ STRATEGIES = {
         "sma": (50, 250, int), "max_actifs": (2, 10, int), "rebalance_days": (5, 42, int)}),
     "double_momentum": (double_momentum, {
         "lookback": (63, 252, int), "rebalance_days": (5, 42, int)}),
+    "baa": (baa, {
+        "top_offensif": (1, 12, int), "top_defensif": (1, 7, int), "rebalance_days": (5, 42, int)}),
+    "all_weather": (all_weather, {"rebalance_days": (5, 63, int)}),
 }
 
 

@@ -62,6 +62,7 @@ def creer(ch, prices, debut=None, garde_fous_sha=None):
         "agents": agents,
         "reference": {"ticker": cfg["reference"], "capital": total, "parts": None, "historique": []},
         "equipe": {"capital": total, "historique": []},
+        "reequilibrage_capital_jours": cfg.get("reequilibrage_capital_jours", 0),
     }
     if i0 < len(prices):
         etat["reference"]["parts"] = total / prices.px(cfg["reference"], ref_i)

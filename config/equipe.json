@@ -2,39 +2,34 @@
   "reference": "SPY",
   "capital_par_agent": 10000,
   "univers": [
-    "SPY",
-    "QQQ",
-    "IWM",
-    "EFA",
+    "AGG",
+    "DBC",
     "EEM",
-    "TLT",
-    "IEF",
+    "EFA",
+    "EWJ",
     "GLD",
+    "HYG",
+    "IEF",
+    "IWM",
+    "LQD",
+    "QQQ",
+    "SHY",
+    "SPY",
+    "TIP",
+    "TLT",
     "VNQ",
-    "XLK",
-    "XLF",
     "XLE",
-    "XLV",
+    "XLF",
+    "XLK",
     "XLP",
-    "XLU"
+    "XLU",
+    "XLV"
   ],
+  "reequilibrage_capital_jours": 21,
   "evolution_tous_les_jours": 5,
   "plis": 6,
   "longueur_pli": 126,
   "agents": {
-    "chasseur": {
-      "strategie": "momentum_ajuste",
-      "role": "Achète ce qui monte le plus régulièrement (rendement divisé par la volatilité) ; le cash qu'il n'utilise pas est placé dans le S&P 500.",
-      "parametres": {
-        "lookback": 126,
-        "top_n": 3,
-        "rebalance_days": 21,
-        "filtre_absolu": 1
-      },
-      "options": {
-        "parking": "SPY"
-      }
-    },
     "contrarien": {
       "strategie": "reversion",
       "role": "Achète les replis excessifs dans une tendance haussière ; le reste du temps, son argent est placé dans le S&P 500.",
@@ -47,23 +42,24 @@
       },
       "options": {
         "parking": "SPY"
-      }
-    },
-    "pilier": {
-      "strategie": "double_momentum",
-      "role": "Tout sur l'indice large (États-Unis ou monde hors États-Unis) qui a le plus monté sur un an ; en obligations si aucun ne monte.",
-      "parametres": {
-        "lookback": 252,
-        "rebalance_days": 21
       },
       "univers": [
         "SPY",
+        "QQQ",
+        "IWM",
         "EFA",
-        "IEF"
-      ],
-      "options": {
-        "refuge": "IEF"
-      }
+        "EEM",
+        "TLT",
+        "IEF",
+        "GLD",
+        "VNQ",
+        "XLK",
+        "XLF",
+        "XLE",
+        "XLV",
+        "XLP",
+        "XLU"
+      ]
     },
     "navigateur": {
       "strategie": "tendance",
@@ -72,7 +68,65 @@
         "sma": 200,
         "max_actifs": 6,
         "rebalance_days": 10
-      }
+      },
+      "univers": [
+        "SPY",
+        "QQQ",
+        "IWM",
+        "EFA",
+        "EEM",
+        "TLT",
+        "IEF",
+        "GLD",
+        "VNQ",
+        "XLK",
+        "XLF",
+        "XLE",
+        "XLV",
+        "XLP",
+        "XLU"
+      ]
+    },
+    "vigie": {
+      "strategie": "baa",
+      "role": "Surveille 4 « canaris » (actions US, émergents, monde, obligations). Tout va bien : les 6 actifs les plus forts sur 12. Un canari faiblit : repli sur les 3 meilleurs actifs défensifs (Keller, BAA 2022).",
+      "parametres": {
+        "top_offensif": 6,
+        "top_defensif": 3,
+        "rebalance_days": 21
+      },
+      "univers": [
+        "AGG",
+        "DBC",
+        "EEM",
+        "EFA",
+        "EWJ",
+        "GLD",
+        "HYG",
+        "IEF",
+        "IWM",
+        "LQD",
+        "QQQ",
+        "SHY",
+        "SPY",
+        "TIP",
+        "TLT",
+        "VNQ"
+      ]
+    },
+    "rempart": {
+      "strategie": "all_weather",
+      "role": "Portefeuille permanent « toutes saisons » (Bridgewater) : 30 % actions, 55 % obligations, 15 % or et matières premières, rééquilibré chaque mois.",
+      "parametres": {
+        "rebalance_days": 21
+      },
+      "univers": [
+        "SPY",
+        "TLT",
+        "IEF",
+        "GLD",
+        "DBC"
+      ]
     }
   }
 }

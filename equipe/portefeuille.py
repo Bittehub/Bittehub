@@ -53,6 +53,17 @@ class Portefeuille:
         self.positions = {}
         return fills
 
+    def redimensionner(self, f, prices, i, g):
+        """Multiplie tout le portefeuille par f (transfert de capital entre agents), en payant le
+        glissement sur la part des positions achetée ou vendue. Rend ce coût."""
+        slip = g["glissement_bps"] / 1e4
+        cout = 0.0
+        for t, q in self.positions.items():
+            cout += abs(q * (f - 1)) * prices.px(t, i) * slip
+            self.positions[t] = q * f
+        self.cash = self.cash * f - cout
+        return cout
+
     def to_dict(self):
         return {"cash": round(self.cash, 6), "positions": {t: round(q, 8) for t, q in self.positions.items()}}
 

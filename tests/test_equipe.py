@@ -198,6 +198,28 @@ class Execution(unittest.TestCase):
             self.assertAlmostEqual(poids[t], w[t], places=2)
 
 
+class StrategiesPubliees(unittest.TestCase):
+    def test_baa_offensif_ou_defensif(self):
+        p = marche(900)
+        par = {"top_offensif": 6, "top_defensif": 3, "rebalance_days": 21}
+        vus = set()
+        for i in range(300, 900, 10):
+            w = strategies.targets("baa", p, i, None, par)
+            self.assertAlmostEqual(sum(w.values()), 1.0)
+            vus.add("offensif" if set(w) <= set(strategies.BAA_OFFENSIF) and len(w) == 6 else "defensif")
+            self.assertTrue(set(w) <= set(strategies.BAA_OFFENSIF) | set(strategies.BAA_DEFENSIF))
+        self.assertEqual(vus, {"offensif", "defensif"})
+
+    def test_all_weather_avant_lancement_d_un_actif(self):
+        p = marche(300)
+        p.closes["DBC"] = [None] * 200 + p.closes["DBC"][200:]
+        w = strategies.targets("all_weather", p, 100, None, {"rebalance_days": 21})
+        self.assertNotIn("DBC", w)
+        self.assertAlmostEqual(sum(w.values()), 1.0)
+        self.assertEqual(set(strategies.targets("all_weather", p, 250, None, {"rebalance_days": 21})),
+                         set(strategies.ALL_WEATHER))
+
+
 class Portefeuilles(unittest.TestCase):
     def test_aller_retour_sans_couts_conserve_le_cash(self):
         p = marche(50)
@@ -264,7 +286,7 @@ class Equipe(Bac):
     def test_parametres_toujours_dans_les_bornes_et_propositions_traitees(self):
         p = self.prices
         e = creer(self.ch, p, debut=p.dates[300])
-        props = [{"id": "x1", "agent": "chasseur", "parametres": {"lookback": 60}, "hypothese": "test",
+        props = [{"id": "x1", "agent": "contrarien", "parametres": {"lookback": 40}, "hypothese": "test",
                   "statut": "en_attente"}]
         avancer(e, p, G, CFG_RAPIDE, props, None)
         for n, a in e["agents"].items():
@@ -289,13 +311,47 @@ class Equipe(Bac):
         self.assertEqual([x["agent"] for x in ev], ["navigateur"])
         self.assertIn(ev[0]["type"], ("reprise", "pause_prolongee"))
 
-    def test_valeur_equipe_egale_somme_des_agents(self):
+    def test_valeur_equipe_egale_somme_des_portefeuilles(self):
         p = self.prices
         e = creer(self.ch, p, debut=p.dates[300])
         avancer(e, p, G, CFG_RAPIDE, [], p.dates[400])
-        total = sum(a["historique"][-1][1] for a in e["agents"].values())
+        total = sum(Portefeuille.from_dict(a["portefeuille"]).valeur(p, 400) for a in e["agents"].values())
         self.assertAlmostEqual(e["equipe"]["historique"][-1][1], total, places=1)
         self.assertEqual(len(e["equipe"]["historique"]), 101)
+
+    def test_solidarite_egalise_le_capital_sans_toucher_aux_performances(self):
+        p = self.prices
+        e = creer(self.ch, p, debut=p.dates[300])
+        self.assertEqual(e["reequilibrage_capital_jours"], CFG["reequilibrage_capital_jours"])
+        e["reequilibrage_capital_jours"] = 0
+        avancer(e, p, G, CFG_RAPIDE, [], p.dates[420], evolution=False)
+        pfs = {n: Portefeuille.from_dict(a["portefeuille"]) for n, a in e["agents"].items()}
+        avant = {n: pf.valeur(p, 421) for n, pf in pfs.items()}
+        vl_avant = {n: moteur.valeur_liquidative(e["agents"][n], v) for n, v in avant.items()}
+        self.assertGreater(max(avant.values()) - min(avant.values()), 100)
+        e["reequilibrage_capital_jours"] = 21
+        ev = moteur._solidarite(e, pfs, dict(avant), p, 421, G)
+        apres = {n: pf.valeur(p, 421) for n, pf in pfs.items()}
+        self.assertEqual(ev[0]["type"], "solidarite")
+        # Le capital est égalisé (au glissement près) et le total ne perd que le glissement…
+        self.assertLess(max(apres.values()) - min(apres.values()), 5.0)
+        self.assertAlmostEqual(sum(apres.values()), sum(avant.values()) - ev[0]["cout"], delta=0.01)
+        # … et la performance propre de chaque agent (valeur liquidative) ne bouge presque pas.
+        for n in avant:
+            vl = moteur.valeur_liquidative(e["agents"][n], apres[n])
+            self.assertAlmostEqual(vl / vl_avant[n], 1.0, delta=0.001)
+
+    def test_agent_en_pause_exclu_de_la_solidarite(self):
+        p = self.prices
+        e = creer(self.ch, p, debut=p.dates[300])
+        avancer(e, p, G, CFG_RAPIDE, [], p.dates[420], evolution=False)
+        nom = sorted(e["agents"])[0]
+        e["agents"][nom]["en_pause"] = True
+        pfs = {n: Portefeuille.from_dict(a["portefeuille"]) for n, a in e["agents"].items()}
+        avant = pfs[nom].valeur(p, 421)
+        e["equipe"]["dernier_reequilibrage_capital"] = None
+        moteur._solidarite(e, pfs, {n: pf.valeur(p, 421) for n, pf in pfs.items()}, p, 421, G)
+        self.assertEqual(pfs[nom].valeur(p, 421), avant)
 
 
 class Donnees(unittest.TestCase):
