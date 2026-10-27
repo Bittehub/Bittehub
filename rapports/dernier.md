@@ -1,15 +1,15 @@
-# Rapport de l'équipe au 2026-10-26
+# Rapport de l'équipe au 2026-10-27
 
-1 jours de cotation depuis le 2026-10-26. Mode papier.
+2 jours de cotation depuis le 2026-10-26. Mode papier.
 
 | | Valeur | Rendement | Annualisé | Vol | Sharpe | Drawdown max |
 |---|---:|---:|---:|---:|---:|---:|
-| **Équipe** | 39 988 $ | +0.0 % | +0.0 % | 0.0 % | 0.00 | 0.0 % |
-| Référence SPY | 40 000 $ | +0.0 % | +0.0 % | 0.0 % | 0.00 | 0.0 % |
-| contrarien (gén. 1) | 9 997 $ | +0.0 % | +0.0 % | 0.0 % | 0.00 | 0.0 % |
-| navigateur (gén. 1) | 9 997 $ | +0.0 % | +0.0 % | 0.0 % | 0.00 | 0.0 % |
-| vigie (gén. 1) | 9 997 $ | +0.0 % | +0.0 % | 0.0 % | 0.00 | 0.0 % |
-| rempart (gén. 1) | 9 997 $ | +0.0 % | +0.0 % | 0.0 % | 0.00 | 0.0 % |
+| **Équipe** | 40 040 $ | +0.1 % | +38.9 % | 0.0 % | 0.00 | 0.0 % |
+| Référence SPY | 40 224 $ | +0.6 % | +309.0 % | 0.0 % | 0.00 | 0.0 % |
+| contrarien (gén. 1) | 10 066 $ | +0.7 % | +462.0 % | 0.0 % | 0.00 | 0.0 % |
+| navigateur (gén. 1) | 9 985 $ | -0.1 % | -26.2 % | 0.0 % | 0.00 | 0.1 % |
+| vigie (gén. 1) | 9 983 $ | -0.1 % | -29.8 % | 0.0 % | 0.00 | 0.1 % |
+| rempart (gén. 1) | 10 007 $ | +0.1 % | +27.3 % | 0.0 % | 0.00 | 0.0 % |
 
 ## Réglages actuels
 

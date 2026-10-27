@@ -2,7 +2,7 @@
  "version": 1,
  "source_donnees": "yahoo",
  "debut": "2026-10-26",
- "au": "2026-10-26",
+ "au": "2026-10-27",
  "garde_fous_sha": "7b1f7de82875d4df172351a3359bd64f980c774f8d1843c7a393dddaaef129bb",
  "agents": {
   "contrarien": {
@@ -36,11 +36,11 @@
     "rebalance_days": 5
    },
    "portefeuille": {
-    "cash": 4000.0,
+    "cash": 201.352361,
     "positions": {
-     "SPY": 2.61180934,
-     "QQQ": 2.8067965,
-     "XLK": 10.72885581
+     "SPY": 4.27216743,
+     "QQQ": 4.55892321,
+     "XLK": 17.35251233
     }
    },
    "capital_initial": 10000.0,
@@ -49,17 +49,17 @@
     [
      "2026-10-26",
      9997.0
+    ],
+    [
+     "2026-10-27",
+     10065.72
     ]
    ],
-   "pic": 10000.0,
+   "pic": 10067.618033540582,
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": "2026-10-26",
-   "cible_en_cours": {
-    "QQQ": 0.32666666666666666,
-    "SPY": 0.32666666666666666,
-    "XLK": 0.32666666666666666
-   },
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   },
@@ -90,14 +90,14 @@
     "rebalance_days": 10
    },
    "portefeuille": {
-    "cash": 4000.0,
+    "cash": 199.736513,
     "positions": {
-     "XLF": 17.84184634,
-     "XLP": 11.36312257,
-     "XLE": 14.35238728,
-     "SPY": 1.30590467,
-     "XLV": 5.57507952,
-     "XLK": 5.3644279
+     "XLF": 29.18512043,
+     "XLP": 18.71326698,
+     "XLE": 23.90933264,
+     "SPY": 2.11894693,
+     "XLV": 9.10182845,
+     "XLK": 8.60665092
     }
    },
    "capital_initial": 10000.0,
@@ -106,20 +106,17 @@
     [
      "2026-10-26",
      9997.0
+    ],
+    [
+     "2026-10-27",
+     9984.93
     ]
    ],
    "pic": 10000.0,
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": "2026-10-26",
-   "cible_en_cours": {
-    "XLE": 0.16333333333333336,
-    "XLV": 0.16333333333333336,
-    "XLK": 0.16333333333333336,
-    "XLP": 0.16333333333333336,
-    "SPY": 0.16333333333333336,
-    "XLF": 0.16333333333333336
-   },
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   },
@@ -151,10 +148,10 @@
     "rebalance_days": 21
    },
    "portefeuille": {
-    "cash": 4000.0,
+    "cash": 199.697546,
     "positions": {
-     "DBC": 59.17704613,
-     "SHY": 49.06726623
+     "DBC": 97.05626233,
+     "SHY": 80.0760048
     }
    },
    "capital_initial": 10000.0,
@@ -163,16 +160,17 @@
     [
      "2026-10-26",
      9997.0
+    ],
+    [
+     "2026-10-27",
+     9982.98
     ]
    ],
    "pic": 10000.0,
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": "2026-10-26",
-   "cible_en_cours": {
-    "DBC": 0.32666666666666666,
-    "SHY": 0.6533333333333333
-   },
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   },
@@ -191,13 +189,13 @@
     "rebalance_days": 21
    },
    "portefeuille": {
-    "cash": 4000.0,
+    "cash": 200.169534,
     "positions": {
-     "DBC": 13.31483538,
-     "GLD": 1.22281307,
-     "IEF": 9.87214876,
-     "SPY": 2.3506284,
-     "TLT": 29.36827375
+     "DBC": 21.88925692,
+     "GLD": 1.97561759,
+     "IEF": 16.14665522,
+     "SPY": 3.82237077,
+     "TLT": 48.05292668
     }
    },
    "capital_initial": 10000.0,
@@ -206,19 +204,17 @@
     [
      "2026-10-26",
      9997.0
+    ],
+    [
+     "2026-10-27",
+     10006.58
     ]
    ],
-   "pic": 10000.0,
+   "pic": 10008.476720540866,
    "en_pause": false,
    "pause_depuis": null,
    "dernier_reequilibrage": "2026-10-26",
-   "cible_en_cours": {
-    "SPY": 0.294,
-    "TLT": 0.39199999999999996,
-    "IEF": 0.147,
-    "GLD": 0.0735,
-    "DBC": 0.0735
-   },
+   "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
   }
@@ -231,6 +227,10 @@
    [
     "2026-10-26",
     40000.0
+   ],
+   [
+    "2026-10-27",
+    40224.2
    ]
   ]
  },
@@ -240,6 +240,10 @@
    [
     "2026-10-26",
     39988.01
+   ],
+   [
+    "2026-10-27",
+    40040.2
    ]
   ],
   "dernier_reequilibrage_capital": "2026-10-26"
