@@ -25,3 +25,7 @@
 {"date": "2026-11-11", "type": "statu_quo", "agent": "rempart", "candidats": 8, "texte": "rempart garde ses réglages : aucun des 8 candidats ne fait mieux de façon fiable."}
 {"date": "2026-11-16", "type": "ordres", "agent": "contrarien", "ordres": [{"ticker": "XLE", "sens": "vente", "parts": 44.396421, "prix": 63.6582}, {"ticker": "SPY", "sens": "achat", "parts": 3.822638, "prix": 740.32}], "poids_cibles": {"SPY": 0.98}, "rotation_reduite": 0.8815}
 {"date": "2026-11-17", "type": "ordres", "agent": "contrarien", "ordres": [{"ticker": "XLE", "sens": "vente", "parts": 5.970028, "prix": 63.3283}, {"ticker": "SPY", "sens": "achat", "parts": 0.517271, "prix": 732.8062}], "poids_cibles": {"SPY": 0.98}, "rotation_reduite": null}
+{"date": "2026-11-18", "type": "statu_quo", "agent": "contrarien", "candidats": 8, "texte": "contrarien garde ses réglages : aucun des 8 candidats ne fait mieux de façon fiable."}
+{"date": "2026-11-18", "type": "statu_quo", "agent": "navigateur", "candidats": 8, "texte": "navigateur garde ses réglages : aucun des 8 candidats ne fait mieux de façon fiable."}
+{"date": "2026-11-18", "type": "statu_quo", "agent": "vigie", "candidats": 8, "texte": "vigie garde ses réglages : aucun des 8 candidats ne fait mieux de façon fiable."}
+{"date": "2026-11-18", "type": "statu_quo", "agent": "rempart", "candidats": 8, "texte": "rempart garde ses réglages : aucun des 8 candidats ne fait mieux de façon fiable."}
