@@ -2,7 +2,7 @@
  "version": 1,
  "source_donnees": "yahoo",
  "debut": "2026-10-26",
- "au": "2026-11-20",
+ "au": "2026-11-23",
  "garde_fous_sha": "7b1f7de82875d4df172351a3359bd64f980c774f8d1843c7a393dddaaef129bb",
  "agents": {
   "contrarien": {
@@ -36,9 +36,11 @@
     "rebalance_days": 5
    },
    "portefeuille": {
-    "cash": 186.502815,
+    "cash": 184.062554,
     "positions": {
-     "SPY": 12.48937231
+     "SPY": 8.66583085,
+     "XLF": 24.81028112,
+     "XLV": 7.69530818
     }
    },
    "capital_initial": 10000.0,
@@ -123,13 +125,21 @@
     [
      "2026-11-20",
      8801.8
+    ],
+    [
+     "2026-11-23",
+     9204.69
     ]
    ],
    "pic": 10123.12005045356,
    "en_pause": false,
    "pause_depuis": null,
-   "dernier_reequilibrage": "2026-11-16",
-   "cible_en_cours": null,
+   "dernier_reequilibrage": "2026-11-23",
+   "cible_en_cours": {
+    "XLF": 0.3333333333333333,
+    "XLV": 0.3333333333333333,
+    "SPY": 0.31333333333333335
+   },
    "dernier_changement": null,
    "generation": 1
   },
@@ -160,14 +170,12 @@
     "rebalance_days": 10
    },
    "portefeuille": {
-    "cash": 196.199826,
+    "cash": 3172.802191,
     "positions": {
-     "XLF": 27.75381226,
-     "XLP": 17.70759901,
-     "XLE": 25.98287802,
-     "SPY": 2.13824601,
-     "XLV": 8.54586969,
-     "VNQ": 16.53277753
+     "XLF": 28.52032855,
+     "XLP": 17.56116109,
+     "XLE": 26.51013717,
+     "XLV": 8.84600794
     }
    },
    "capital_initial": 10000.0,
@@ -252,12 +260,16 @@
     [
      "2026-11-20",
      9404.71
+    ],
+    [
+     "2026-11-23",
+     9521.45
     ]
    ],
    "pic": 10084.236176163331,
    "en_pause": false,
    "pause_depuis": null,
-   "dernier_reequilibrage": "2026-11-09",
+   "dernier_reequilibrage": "2026-11-23",
    "cible_en_cours": null,
    "dernier_changement": null,
    "generation": 1
@@ -378,6 +390,10 @@
     [
      "2026-11-20",
      9580.39
+    ],
+    [
+     "2026-11-23",
+     9556.8
     ]
    ],
    "pic": 10005.035343503609,
@@ -494,6 +510,10 @@
     [
      "2026-11-20",
      9510.29
+    ],
+    [
+     "2026-11-23",
+     9661.27
     ]
    ],
    "pic": 10008.476720540866,
@@ -589,6 +609,10 @@
    [
     "2026-11-20",
     36051.06
+   ],
+   [
+    "2026-11-23",
+    37748.54
    ]
   ]
  },
@@ -674,6 +698,10 @@
    [
     "2026-11-20",
     37297.18
+   ],
+   [
+    "2026-11-23",
+    37944.21
    ]
   ],
   "dernier_reequilibrage_capital": "2026-10-26"
