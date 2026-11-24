@@ -1,15 +1,15 @@
-# Rapport de l'équipe au 2026-11-23
+# Rapport de l'équipe au 2026-11-24
 
-21 jours de cotation depuis le 2026-10-26. Mode papier.
+22 jours de cotation depuis le 2026-10-26. Mode papier.
 
 | | Valeur | Rendement | Annualisé | Vol | Sharpe | Drawdown max |
 |---|---:|---:|---:|---:|---:|---:|
-| **Équipe** | 37 944 $ | -5.1 % | -48.4 % | 15.2 % | -4.28 | 7.1 % |
-| Référence SPY | 37 749 $ | -5.6 % | -51.8 % | 31.9 % | -2.13 | 10.7 % |
-| contrarien (gén. 1) | 9 205 $ | -7.9 % | -64.7 % | 37.7 % | -2.58 | 13.1 % |
-| navigateur (gén. 1) | 9 521 $ | -4.8 % | -45.9 % | 18.5 % | -3.22 | 6.7 % |
-| vigie (gén. 1) | 9 557 $ | -4.4 % | -43.3 % | 6.6 % | -8.51 | 4.5 % |
-| rempart (gén. 1) | 9 661 $ | -3.4 % | -35.0 % | 10.6 % | -3.99 | 5.0 % |
+| **Équipe** | 38 017 $ | -4.9 % | -45.5 % | 14.9 % | -4.01 | 7.1 % |
+| Référence SPY | 37 565 $ | -6.1 % | -52.9 % | 31.1 % | -2.27 | 10.7 % |
+| contrarien (gén. 1) | 9 224 $ | -7.7 % | -62.0 % | 36.8 % | -2.45 | 13.1 % |
+| navigateur (gén. 1) | 9 623 $ | -3.7 % | -36.7 % | 18.6 % | -2.37 | 6.7 % |
+| vigie (gén. 1) | 9 549 $ | -4.5 % | -42.3 % | 6.5 % | -8.45 | 4.6 % |
+| rempart (gén. 1) | 9 621 $ | -3.8 % | -36.9 % | 10.4 % | -4.37 | 5.0 % |
 
 ## Réglages actuels
 
@@ -20,7 +20,7 @@
 
 ## Événements récents
 
-- Rien de notable.
+- 2026-11-24 · Solidarité : 279 $ passent des agents en avance (navigateur, vigie, rempart) aux agents en retard (contrarien).
 
 ## Derniers éléments du savoir partagé
 
